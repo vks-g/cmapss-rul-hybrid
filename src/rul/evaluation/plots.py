@@ -6,7 +6,7 @@ subplot grids), otherwise on a new figure, and returns the Axes.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,6 +24,9 @@ BASELINE = "#c3c2b7"
 # Categorical slots in a fixed, colour-blind-checked order. A model keeps its
 # slot in every figure, so "XGBoost is orange" holds across the whole report.
 SERIES = ("#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+
+STAGES = ("early", "mid", "late")
+METRIC_LABELS = {"rmse": "RMSE (cycles)", "mae": "MAE (cycles)", "nasa_score": "NASA score"}
 
 
 def plot_pred_vs_true(
@@ -78,6 +81,47 @@ def plot_trajectory(
     _legend(ax)
     _title(ax, title)
     return ax
+
+
+def plot_stage_errors(
+    results: Mapping[str, dict],
+    metric: str = "rmse",
+    ax: Axes | None = None,
+    title: str | None = None,
+) -> Axes:
+    """Grouped bars: each model's error in the early, mid and late stage.
+
+    Args:
+        results: ``{model name: evaluate(...) result}``. Dict order sets each
+            model's colour, so pass models in the same order in every figure.
+        metric: ``"rmse"``, ``"mae"`` or ``"nasa_score"``.
+    """
+    if metric not in METRIC_LABELS:
+        raise ValueError(f"metric must be one of {', '.join(METRIC_LABELS)}, got {metric!r}")
+    ax = _axes(ax)
+
+    x = np.arange(len(STAGES))
+    width = min(0.15, 0.8 / len(results))
+    for i, (name, result) in enumerate(results.items()):
+        heights = [_or_nan(result["by_stage"][stage][metric]) for stage in STAGES]
+        offset = (i - (len(results) - 1) / 2) * width
+        ax.bar(x + offset, heights, width=width, color=SERIES[i], edgecolor=SURFACE,
+               linewidth=1.5, label=name, zorder=3)
+
+    late_max, mid_max = next(iter(results.values()))["stage_bins"]
+    ax.set_xticks(x, [f"Early\n(RUL > {mid_max:g})", f"Mid\n({late_max:g} < RUL \u2264 {mid_max:g})",
+                      f"Late\n(RUL \u2264 {late_max:g})"])
+    ax.grid(False, axis="x")
+    ax.set_ylim(bottom=0)
+    ax.set_ylabel(METRIC_LABELS[metric])
+    _legend(ax)
+    _title(ax, title)
+    return ax
+
+
+def _or_nan(value: float | None) -> float:
+    """Empty stages report ``None``; plot them as a missing bar, not a zero."""
+    return np.nan if value is None else value
 
 
 def _paired(y_true: ArrayLike, y_pred: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
