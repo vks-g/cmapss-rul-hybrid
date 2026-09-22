@@ -7,7 +7,7 @@ matplotlib.use("Agg")  # render off-screen; must run before pyplot is imported
 import matplotlib.pyplot as plt  # noqa: E402
 import pytest  # noqa: E402
 
-from rul.evaluation.plots import plot_pred_vs_true  # noqa: E402
+from rul.evaluation.plots import plot_pred_vs_true, plot_trajectory  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -30,3 +30,18 @@ def test_pred_vs_true_draws_one_point_per_engine_and_a_perfect_prediction_line()
 def test_pred_vs_true_rejects_mismatched_lengths():
     with pytest.raises(ValueError, match="3 targets"):
         plot_pred_vs_true([10, 50, 120], [15, 40])
+
+
+def test_trajectory_draws_true_and_predicted_rul_over_the_engines_cycles():
+    ax = plot_trajectory([1, 2, 3], [114, 113, 112], [100, 105, 111])
+
+    lines = {line.get_label(): line.get_data() for line in ax.get_lines()}
+    assert [list(v) for v in lines["True RUL"]] == [[1, 2, 3], [114, 113, 112]]
+    assert [list(v) for v in lines["Predicted RUL"]] == [[1, 2, 3], [100, 105, 111]]
+    assert ax.get_legend() is not None
+    assert "cycle" in ax.get_xlabel().lower()
+
+
+def test_trajectory_rejects_cycles_that_do_not_match_the_targets():
+    with pytest.raises(ValueError, match="2 cycles for 3 targets"):
+        plot_trajectory([1, 2], [114, 113, 112], [100, 105, 111])

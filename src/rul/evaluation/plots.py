@@ -52,6 +52,34 @@ def plot_pred_vs_true(
     return ax
 
 
+def plot_trajectory(
+    cycle: ArrayLike,
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+    ax: Axes | None = None,
+    title: str | None = None,
+) -> Axes:
+    """True and predicted RUL of one engine across its recorded cycles.
+
+    The true curve is the neutral reference; the prediction carries the colour.
+    """
+    true, pred = _paired(y_true, y_pred)
+    cycles = np.asarray(cycle)
+    if cycles.shape != true.shape:
+        raise ValueError(f"got {cycles.size} cycles for {true.size} targets")
+    ax = _axes(ax)
+
+    ax.plot(cycles, true, color=INK_SECONDARY, linewidth=2, label="True RUL", zorder=2)
+    ax.plot(cycles, pred, color=SERIES[0], linewidth=2, label="Predicted RUL", zorder=3)
+
+    ax.set_ylim(bottom=0)
+    ax.set_xlabel("Cycle")
+    ax.set_ylabel("RUL (cycles)")
+    _legend(ax)
+    _title(ax, title)
+    return ax
+
+
 def _paired(y_true: ArrayLike, y_pred: ArrayLike) -> tuple[np.ndarray, np.ndarray]:
     true = np.asarray(y_true, dtype=float)
     pred = np.asarray(y_pred, dtype=float)
@@ -75,6 +103,12 @@ def _axes(ax: Axes | None) -> Axes:
     ax.xaxis.label.set_color(INK_SECONDARY)
     ax.yaxis.label.set_color(INK_SECONDARY)
     return ax
+
+
+def _legend(ax: Axes) -> None:
+    legend = ax.legend(frameon=False, fontsize=9, loc="upper right")
+    for text in legend.get_texts():
+        text.set_color(INK_SECONDARY)
 
 
 def _title(ax: Axes, title: str | None) -> None:
