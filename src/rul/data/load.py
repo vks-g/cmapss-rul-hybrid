@@ -13,6 +13,8 @@ from typing import NamedTuple
 
 import pandas as pd
 
+SUBSETS = ("FD001", "FD002", "FD003", "FD004")
+
 SETTING_COLS = [f"op_{i}" for i in range(1, 4)]
 SENSOR_COLS = [f"s_{i}" for i in range(1, 22)]
 COLUMNS = ["unit", "cycle", *SETTING_COLS, *SENSOR_COLS]
@@ -33,7 +35,7 @@ def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
     """Load the train, test and true-RUL files of one C-MAPSS subset.
 
     Args:
-        subset: Subset name, e.g. ``"FD001"``.
+        subset: One of :data:`SUBSETS`, e.g. ``"FD001"``.
         data_dir: Folder holding the raw ``.txt`` files.
 
     Returns:
@@ -41,6 +43,8 @@ def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
         row per engine cycle, with the columns in :data:`COLUMNS`. ``rul_test``
         is the true RUL at each test engine's last cycle, indexed by ``unit``.
     """
+    if subset not in SUBSETS:
+        raise ValueError(f"Unknown subset {subset!r}; expected one of {', '.join(SUBSETS)}")
     data_dir = Path(data_dir)
     train = _read_cycles(data_dir / f"train_{subset}.txt")
     test = _read_cycles(data_dir / f"test_{subset}.txt")

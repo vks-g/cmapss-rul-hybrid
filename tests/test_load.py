@@ -52,3 +52,9 @@ def test_rul_targets_are_indexed_by_test_unit(tmp_path):
 
     assert rul_test.to_dict() == {1: 112, 2: 98}
     assert rul_test.index.name == "unit"
+
+
+@pytest.mark.parametrize("bad_name", ["FD005", "fd001", "train_FD001", ""])
+def test_unknown_subset_name_is_rejected(tmp_path, bad_name):
+    with pytest.raises(ValueError, match="FD001"):
+        load_subset(bad_name, data_dir=tmp_path)
