@@ -1,0 +1,82 @@
+# cmapss-rul-hybrid
+
+Remaining Useful Life (RUL) prediction for turbofan engines on the NASA C-MAPSS dataset. We compare regression on engineered degradation features (ML, Phase 1) against sequence models that learn directly from raw sensor windows (DL, Phase 2). A hybrid model then fuses the two.
+
+## Problem
+
+Each engine in C-MAPSS is a multivariate time series of 3 operating settings and 21 sensors, recorded once per cycle, that runs until failure. The task is to predict how many cycles a test engine has left, given its history up to some point before failure.
+
+Fixed rolling-window features may miss long degradation trajectories and interactions whose timing differs across engines. This project tests whether sequence models close that gap. The full brief is in [`docs/project_brief.md`](docs/project_brief.md).
+
+## Approach
+
+| Phase | Method | Models |
+|---|---|---|
+| 1: ML | Engineered features: cycle, rolling mean/slope, operating regime, sensor health | Random Forest, XGBoost, Elastic Net |
+| 2: DL | Fixed-length sensor windows | LSTM, Temporal CNN, Transformer encoder |
+| 2: Hybrid | Sequence encoder + engineered-feature branch, fused into one regression head | Fusion model |
+
+**Fair comparison.** All models share the same engine-level splits (by `unit` id, never by row) and the same metrics: RMSE and MAE on RUL, NASA score, and error by degradation stage (early / mid / late).
+
+## Dataset
+
+NASA C-MAPSS Turbofan Engine Degradation Simulation (Saxena et al., 2008). FD001 is the primary subset; FD002–FD004 are extensions.
+
+The raw data is not committed. Download instructions are under Setup.
+
+## Repository structure
+
+```
+├── configs/          experiment configs (YAML)
+├── data/             raw + processed data (gitignored)
+├── docs/             project brief, literature notes
+├── notebooks/
+│   ├── phase1/       EDA, feature engineering, ML models, ML results
+│   └── phase2/       LSTM, TCN, Transformer, ablations, validation, hybrid, final comparison
+├── presentations/    phase slide decks
+├── reports/          IEEE LaTeX reports (one section file per owner)
+├── results/          figures, metrics (committed); model checkpoints (gitignored)
+├── scripts/          data download, training, ablation runners
+├── src/rul/          shared Python package
+│   ├── data/         loading, RUL labels, engine-level splits
+│   ├── features/     cleaning, regimes, rolling features, windows
+│   ├── models/       ML baselines, sequence models, hybrid
+│   ├── training/     shared PyTorch training loop
+│   └── evaluation/   metrics and plots
+└── tests/            unit tests (labels, splits, windows)
+```
+
+## Setup & reproduce
+
+_To be added._
+
+## Results
+
+_To be filled in as experiments complete._
+
+| Model | RMSE | MAE | NASA score |
+|---|---|---|---|
+| Random Forest | – | – | – |
+| XGBoost | – | – | – |
+| Elastic Net | – | – | – |
+| LSTM | – | – | – |
+| Temporal CNN | – | – | – |
+| Transformer | – | – | – |
+| Hybrid | – | – | – |
+
+## Team
+
+| Member | GitHub |
+|---|---|
+| M1 (team lead) | [@vks-g](https://github.com/vks-g) |
+| M2 | – |
+| M3 | – |
+| M4 | – |
+| M5 | – |
+
+Git workflow is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## References
+
+- A. Saxena, K. Goebel, D. Simon, and N. Eklund, "Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation," *PHM08*, 2008.
+- S. Hochreiter and J. Schmidhuber, "Long Short-Term Memory," *Neural Computation*, 1997.

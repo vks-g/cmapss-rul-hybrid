@@ -1,0 +1,51 @@
+# ---- Data (downloaded locally, never committed) ----
+data/*
+!data/README.md
+
+# ---- Model checkpoints / large artifacts ----
+results/models/*
+!results/models/.gitkeep
+*.pt
+*.pth
+*.ckpt
+*.joblib
+*.pkl
+
+# ---- Local-only course material ----
+Context/
+Info/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- LaTeX build files ----
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# ---- OS / editor / tools ----
+.DS_Store
+.vscode/
+.idea/
+.remember/
+.claude/

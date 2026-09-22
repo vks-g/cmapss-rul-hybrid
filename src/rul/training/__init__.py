@@ -1,0 +1,1 @@
+"""Shared PyTorch training loop."""
