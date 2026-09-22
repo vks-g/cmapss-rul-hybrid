@@ -1,5 +1,6 @@
 """Tests for rul.evaluation.metrics."""
 
+import json
 import math
 
 import pytest
@@ -81,3 +82,18 @@ def test_stage_bins_are_configurable():
     assert result["by_stage"]["mid"]["n"] == 1
     assert result["by_stage"]["late"]["n"] == 0
     assert result["stage_bins"] == [30.0, 60.0]
+
+
+def test_result_can_be_written_to_a_metrics_file(tmp_path):
+    # results/metrics/ holds plain JSON, so no numpy types may leak into the dict.
+    result = evaluate([150, 20], [140, 25])
+
+    path = tmp_path / "run.json"
+    path.write_text(json.dumps(result))
+
+    assert json.loads(path.read_text())["by_stage"]["mid"] == {
+        "n": 0,
+        "rmse": None,
+        "mae": None,
+        "nasa_score": None,
+    }
