@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from rul.data.labels import add_train_rul
+from rul.data.labels import add_test_rul, add_train_rul
 
 
 def cycles(spec: dict) -> pd.DataFrame:
@@ -46,3 +46,25 @@ def test_train_rul_cap_flattens_the_early_part_of_the_curve():
 def test_non_positive_cap_is_rejected(bad_cap):
     with pytest.raises(ValueError, match="cap"):
         add_train_rul(cycles({1: [1, 2]}), cap=bad_cap)
+
+
+def rul_file(values: dict) -> pd.Series:
+    """True RUL at the last test cycle, shaped like load_subset's rul_test."""
+    return pd.Series(values, name="rul").rename_axis("unit")
+
+
+def test_test_rul_counts_back_from_the_true_rul_at_the_last_cycle():
+    # Engine 1 stops at cycle 3 with 112 cycles left, so cycle 1 had 114.
+    test = cycles({1: [1, 2, 3], 2: [1, 2]})
+
+    labelled = add_test_rul(test, rul_file({1: 112, 2: 98}))
+
+    assert labelled["rul"].tolist() == [114, 113, 112, 99, 98]
+
+
+def test_test_rul_can_be_capped_like_the_training_target():
+    test = cycles({1: [1, 2, 3], 2: [1, 2]})
+
+    labelled = add_test_rul(test, rul_file({1: 112, 2: 98}), cap=100)
+
+    assert labelled["rul"].tolist() == [100, 100, 100, 99, 98]
