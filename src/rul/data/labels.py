@@ -51,6 +51,9 @@ def add_test_rul(
         cap: Optional upper limit on the RUL; ``None`` keeps it uncapped.
     """
     last_cycle = test.groupby("unit")["cycle"].transform("max")
+    missing = sorted(set(test["unit"]) - set(rul_test.index))
+    if missing:
+        raise ValueError(f"no true RUL for test engine(s) {missing}")
     rul_at_last = test["unit"].map(rul_test)
     rul = rul_at_last + (last_cycle - test["cycle"])
     return test.assign(rul=_apply_cap(rul, cap))

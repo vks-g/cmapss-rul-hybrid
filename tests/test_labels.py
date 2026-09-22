@@ -68,3 +68,10 @@ def test_test_rul_can_be_capped_like_the_training_target():
     labelled = add_test_rul(test, rul_file({1: 112, 2: 98}), cap=100)
 
     assert labelled["rul"].tolist() == [100, 100, 100, 99, 98]
+
+
+def test_test_engine_missing_from_the_rul_file_is_an_error_not_a_nan():
+    test = cycles({1: [1, 2], 2: [1], 7: [1]})
+
+    with pytest.raises(ValueError, match=r"no true RUL for test engine\(s\) \[2, 7\]"):
+        add_test_rul(test, rul_file({1: 112}))
