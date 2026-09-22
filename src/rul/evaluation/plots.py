@@ -7,12 +7,17 @@ subplot grids), otherwise on a new figure, and returns the Axes.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
 ArrayLike = Sequence[float] | np.ndarray
+
+# src/rul/evaluation/plots.py -> repo root is three folders up from this file's folder.
+FIGURES_DIR = Path(__file__).resolve().parents[3] / "results" / "figures"
 
 # Figures go into a white-page PDF, so the surface is plain white.
 SURFACE = "#ffffff"
@@ -124,6 +129,15 @@ def plot_stage_errors(
     _legend(ax)
     _title(ax, title)
     return ax
+
+
+def save_figure(fig: Figure, name: str, out_dir: str | Path = FIGURES_DIR) -> Path:
+    """Save ``fig`` as ``<out_dir>/<name>.png`` at print resolution; return the path."""
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"{name}.png"
+    fig.savefig(path, dpi=200, bbox_inches="tight", facecolor=SURFACE)
+    return path
 
 
 def _or_nan(value: float | None) -> float:

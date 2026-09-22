@@ -1,6 +1,7 @@
 """Tests for rul.evaluation.plots."""
 
 import math
+from pathlib import Path
 
 import matplotlib
 
@@ -12,10 +13,12 @@ from matplotlib.colors import to_rgba  # noqa: E402
 
 from rul.evaluation.metrics import evaluate  # noqa: E402
 from rul.evaluation.plots import (  # noqa: E402
+    FIGURES_DIR,
     SERIES,
     plot_pred_vs_true,
     plot_stage_errors,
     plot_trajectory,
+    save_figure,
 )
 
 
@@ -112,3 +115,18 @@ def test_stage_errors_refuse_results_scored_with_different_stage_bins():
 
     with pytest.raises(ValueError, match="same stage bins"):
         plot_stage_errors({"Random Forest": RF, "XGBoost": other_bins})
+
+
+def test_save_figure_writes_a_png_and_creates_the_folder(tmp_path):
+    ax = plot_pred_vs_true([10, 50], [12, 45])
+
+    path = save_figure(ax.figure, "fd001_rf_pred_vs_true", out_dir=tmp_path / "figures")
+
+    assert path == tmp_path / "figures" / "fd001_rf_pred_vs_true.png"
+    assert path.read_bytes()[:8] == b"\x89PNG\r\n\x1a\n"
+
+
+def test_figures_default_to_results_figures_in_the_repo():
+    repo_root = Path(__file__).resolve().parents[1]
+
+    assert FIGURES_DIR == repo_root / "results" / "figures"
