@@ -47,8 +47,10 @@ def plot_pred_vs_true(
     top = float(max(true.max(), pred.max())) * 1.05
 
     ax.plot([0, top], [0, top], color=INK_MUTED, linewidth=1, zorder=2)
-    ax.annotate("perfect prediction", (top, top), xytext=(-4, -12), textcoords="offset points",
-                ha="right", va="top", fontsize=8, color=INK_MUTED)
+    # Label runs along the line, just under it, where predictions are rarest.
+    ax.annotate("perfect prediction", (0.82 * top, 0.82 * top), xytext=(5, -5),
+                textcoords="offset points", rotation=45, rotation_mode="anchor",
+                ha="center", va="top", fontsize=8, color=INK_MUTED)
     ax.scatter(true, pred, s=36, color=SERIES[0], edgecolors=SURFACE, linewidths=1, zorder=3)
 
     ax.set_xlim(0, top)
@@ -124,9 +126,12 @@ def plot_stage_errors(
     ax.set_xticks(x, [f"Early\n(RUL > {mid_max:g})", f"Mid\n({late_max:g} < RUL ≤ {mid_max:g})",
                       f"Late\n(RUL ≤ {late_max:g})"])
     ax.grid(False, axis="x")
-    ax.set_ylim(bottom=0)
+    # Headroom above the tallest bar keeps the legend row clear of the data.
+    tallest = max((bar.get_height() for c in ax.containers for bar in c
+                   if not np.isnan(bar.get_height())), default=1.0)
+    ax.set_ylim(0, tallest * 1.3)
     ax.set_ylabel(METRIC_LABELS[metric])
-    _legend(ax)
+    _legend(ax, loc="upper left", ncols=min(len(results), 4))
     _title(ax, title)
     return ax
 
@@ -170,8 +175,8 @@ def _axes(ax: Axes | None) -> Axes:
     return ax
 
 
-def _legend(ax: Axes) -> None:
-    legend = ax.legend(frameon=False, fontsize=9, loc="upper right")
+def _legend(ax: Axes, loc: str = "upper right", ncols: int = 1) -> None:
+    legend = ax.legend(frameon=False, fontsize=9, loc=loc, ncols=ncols)
     for text in legend.get_texts():
         text.set_color(INK_SECONDARY)
 
