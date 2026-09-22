@@ -31,3 +31,15 @@ def _errors(y_true: ArrayLike, y_pred: ArrayLike) -> np.ndarray:
     if true.shape != pred.shape:
         raise ValueError(f"got {true.size} targets and {pred.size} predictions")
     return pred - true
+
+
+def nasa_score(y_true: ArrayLike, y_pred: ArrayLike) -> float:
+    """PHM08 asymmetric score: lower is better, 0 is perfect.
+
+    Late predictions (the engine fails sooner than predicted) are penalised
+    harder than early ones, because a missed failure costs more than an early
+    maintenance stop.
+    """
+    error = _errors(y_true, y_pred)
+    scale = np.where(error < 0, 13.0, 10.0)
+    return float(np.sum(np.exp(np.abs(error) / scale) - 1))
