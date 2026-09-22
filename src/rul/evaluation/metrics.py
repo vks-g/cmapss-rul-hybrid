@@ -12,6 +12,11 @@ import numpy as np
 
 ArrayLike = Sequence[float] | np.ndarray
 
+# Degradation stage from the true RUL: late (close to failure) is the hardest
+# and most valuable part of the curve to get right.
+STAGE_BINS = (50.0, 100.0)
+STAGES = ("early", "mid", "late")
+
 
 def rmse(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     """Root mean squared error, in cycles."""
@@ -43,3 +48,50 @@ def nasa_score(y_true: ArrayLike, y_pred: ArrayLike) -> float:
     error = _errors(y_true, y_pred)
     scale = np.where(error < 0, 13.0, 10.0)
     return float(np.sum(np.exp(np.abs(error) / scale) - 1))
+
+
+def evaluate(
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+    stage_bins: tuple[float, float] = STAGE_BINS,
+) -> dict:
+    """Score predictions overall and per degradation stage.
+
+    Args:
+        y_true: True RUL values, in cycles.
+        y_pred: Predicted RUL values, in cycles.
+        stage_bins: ``(late_max, mid_max)`` boundaries on the true RUL. With the
+            default, ``RUL <= 50`` is late, ``50 < RUL <= 100`` is mid and
+            anything above is early.
+
+    Returns:
+        A JSON-serialisable dict with the overall ``n``, ``rmse``, ``mae`` and
+        ``nasa_score``, and the same figures per stage under ``by_stage``.
+    """
+    true = np.asarray(y_true, dtype=float)
+    pred = np.asarray(y_pred, dtype=float)
+    _errors(true, pred)  # validates the shapes
+
+    late_max, mid_max = stage_bins
+    masks = {
+        "early": true > mid_max,
+        "mid": (true > late_max) & (true <= mid_max),
+        "late": true <= late_max,
+    }
+    return {
+        **_scores(true, pred),
+        "stage_bins": [float(late_max), float(mid_max)],
+        "by_stage": {stage: _scores(true[m], pred[m]) for stage, m in masks.items()},
+    }
+
+
+def _scores(true: np.ndarray, pred: np.ndarray) -> dict:
+    """Overall scores for one group of engines, or empty scores if it has none."""
+    if true.size == 0:
+        return {"n": 0, "rmse": None, "mae": None, "nasa_score": None}
+    return {
+        "n": int(true.size),
+        "rmse": rmse(true, pred),
+        "mae": mae(true, pred),
+        "nasa_score": nasa_score(true, pred),
+    }

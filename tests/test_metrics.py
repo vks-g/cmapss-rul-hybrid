@@ -4,7 +4,7 @@ import math
 
 import pytest
 
-from rul.evaluation.metrics import mae, nasa_score, rmse
+from rul.evaluation.metrics import evaluate, mae, nasa_score, rmse
 
 
 def test_rmse_and_mae_on_hand_checked_errors():
@@ -43,3 +43,25 @@ def test_nasa_score_sums_over_engines_and_is_zero_when_exact():
     assert nasa_score([50, 50], [40, 60]) == pytest.approx(
         (math.exp(10 / 13) - 1) + (math.e - 1)
     )
+
+
+def test_evaluate_reports_overall_metrics():
+    result = evaluate([10, 20, 30], [12, 18, 33])
+
+    assert result["n"] == 3
+    assert result["mae"] == pytest.approx(7 / 3)
+    assert result["rmse"] == pytest.approx(math.sqrt(17 / 3))
+    assert result["nasa_score"] == pytest.approx(
+        (math.exp(2 / 10) - 1) + (math.exp(2 / 13) - 1) + (math.exp(3 / 10) - 1)
+    )
+
+
+def test_evaluate_buckets_errors_by_degradation_stage():
+    # true RUL 150 (early), 75 (mid), 20 (late); absolute errors 10, 5, 4
+    result = evaluate([150, 75, 20], [160, 70, 24])
+
+    by_stage = result["by_stage"]
+    assert [by_stage[s]["n"] for s in ("early", "mid", "late")] == [1, 1, 1]
+    assert by_stage["early"]["mae"] == pytest.approx(10)
+    assert by_stage["mid"]["mae"] == pytest.approx(5)
+    assert by_stage["late"]["mae"] == pytest.approx(4)
