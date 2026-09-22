@@ -49,8 +49,14 @@ def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
     train = _read_cycles(data_dir / f"train_{subset}.txt")
     test = _read_cycles(data_dir / f"test_{subset}.txt")
     rul_test = _read_rul(data_dir / f"RUL_{subset}.txt")
+
     # RUL_FDxxx.txt has one line per test engine, in unit order.
-    rul_test.index = pd.Index(sorted(test["unit"].unique()), name="unit")
+    test_units = sorted(test["unit"].unique())
+    if len(rul_test) != len(test_units):
+        raise ValueError(
+            f"RUL_{subset}.txt has {len(rul_test)} RUL values for {len(test_units)} test engines"
+        )
+    rul_test.index = pd.Index(test_units, name="unit")
     return CMAPSSData(train, test, rul_test)
 
 

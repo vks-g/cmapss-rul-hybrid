@@ -68,3 +68,10 @@ def test_missing_data_file_error_names_the_file_and_the_fix(tmp_path):
         load_subset("FD001", data_dir=tmp_path)
 
     assert "download" in str(excinfo.value).lower()
+
+
+def test_rul_file_must_have_one_value_per_test_engine(tmp_path):
+    write_subset(tmp_path, train_cycles={1: 3}, test_cycles={1: 2, 2: 1, 3: 4}, rul=[112, 98])
+
+    with pytest.raises(ValueError, match="2 RUL values for 3 test engines"):
+        load_subset("FD001", data_dir=tmp_path)
