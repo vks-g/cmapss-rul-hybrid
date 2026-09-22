@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from rul.data.labels import add_test_rul, add_train_rul, last_cycles
+from rul.data.load import DATA_DIR, load_subset
 
 
 def cycles(spec: dict) -> pd.DataFrame:
@@ -86,3 +87,19 @@ def test_last_cycles_keeps_one_row_per_engine_at_its_final_cycle():
 
     assert last[["unit", "cycle", "rul"]].values.tolist() == [[1, 3, 112], [2, 2, 98]]
     assert last.index.tolist() == [0, 1]
+
+
+# Facts below were read off the raw FD001 files with awk, not computed by rul.
+@pytest.mark.skipif(not DATA_DIR.is_dir(), reason="raw C-MAPSS data not downloaded")
+def test_labels_on_real_fd001():
+    train, test, rul_test = load_subset("FD001")
+
+    train = add_train_rul(train)
+    engine_1 = train[train["unit"] == 1]
+    assert engine_1["rul"].iloc[0] == 191  # engine 1 ran 192 cycles
+    assert (last_cycles(train)["rul"] == 0).all()
+    assert train["rul"].max() == 361  # engine 69, the longest, ran 362 cycles
+
+    test = add_test_rul(test, rul_test)
+    assert test[test["unit"] == 1]["rul"].iloc[0] == 142  # 112 left at cycle 31
+    assert last_cycles(test)["rul"].tolist() == rul_test.tolist()
