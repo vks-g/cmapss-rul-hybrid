@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from rul.data.load import load_subset
+from rul.data.load import DATA_DIR, load_subset
 
 # First row of train_FD001.txt after the unit and cycle columns, including the
 # trailing double space the raw files end every line with.
@@ -75,3 +75,28 @@ def test_rul_file_must_have_one_value_per_test_engine(tmp_path):
 
     with pytest.raises(ValueError, match="2 RUL values for 3 test engines"):
         load_subset("FD001", data_dir=tmp_path)
+
+
+# Counted from the raw files with `wc -l` and `awk '{print $1}' | sort -u`.
+# Note: the dataset readme swaps the FD004 engine counts; the files have
+# 249 training and 248 test engines.
+REAL_COUNTS = {
+    # subset: (train rows, train engines, test rows, test engines)
+    "FD001": (20631, 100, 13096, 100),
+    "FD002": (53759, 260, 33991, 259),
+    "FD003": (24720, 100, 16596, 100),
+    "FD004": (61249, 249, 41214, 248),
+}
+
+
+@pytest.mark.skipif(not DATA_DIR.is_dir(), reason="raw C-MAPSS data not downloaded")
+@pytest.mark.parametrize("subset", REAL_COUNTS)
+def test_real_subsets_match_raw_file_counts(subset):
+    train_rows, train_units, test_rows, test_units = REAL_COUNTS[subset]
+
+    train, test, rul_test = load_subset(subset)
+
+    assert (len(train), train["unit"].nunique()) == (train_rows, train_units)
+    assert (len(test), test["unit"].nunique()) == (test_rows, test_units)
+    assert len(rul_test) == test_units
+    assert not train.isna().any().any() and not test.isna().any().any()
