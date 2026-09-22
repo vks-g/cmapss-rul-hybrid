@@ -24,7 +24,8 @@ def write_subset(folder: Path, train_cycles: dict, test_cycles: dict, rul: list,
 
     (folder / f"train_{name}.txt").write_text(lines(train_cycles))
     (folder / f"test_{name}.txt").write_text(lines(test_cycles))
-    (folder / f"RUL_{name}.txt").write_text("".join(f"{r}\n" for r in rul))
+    # Real RUL files also end each line with a trailing space.
+    (folder / f"RUL_{name}.txt").write_text("".join(f"{r} \n" for r in rul))
     return folder
 
 
@@ -42,3 +43,12 @@ def test_cycles_are_parsed_into_named_columns(tmp_path):
     assert train.loc[0, "s_1"] == 518.67
     assert train.loc[0, "s_21"] == pytest.approx(23.419)
     assert len(test) == 3
+
+
+def test_rul_targets_are_indexed_by_test_unit(tmp_path):
+    write_subset(tmp_path, train_cycles={1: 3, 2: 2}, test_cycles={1: 2, 2: 1}, rul=[112, 98])
+
+    _, _, rul_test = load_subset("FD001", data_dir=tmp_path)
+
+    assert rul_test.to_dict() == {1: 112, 2: 98}
+    assert rul_test.index.name == "unit"

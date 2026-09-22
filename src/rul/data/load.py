@@ -26,11 +26,11 @@ class CMAPSSData(NamedTuple):
 
     train: pd.DataFrame
     test: pd.DataFrame
-    rul_test: pd.Series | None
+    rul_test: pd.Series
 
 
 def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
-    """Load the train and test files of one C-MAPSS subset.
+    """Load the train, test and true-RUL files of one C-MAPSS subset.
 
     Args:
         subset: Subset name, e.g. ``"FD001"``.
@@ -38,15 +38,24 @@ def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
 
     Returns:
         ``CMAPSSData(train, test, rul_test)``. ``train`` and ``test`` have one
-        row per engine cycle, with the columns in :data:`COLUMNS`.
+        row per engine cycle, with the columns in :data:`COLUMNS`. ``rul_test``
+        is the true RUL at each test engine's last cycle, indexed by ``unit``.
     """
     data_dir = Path(data_dir)
     train = _read_cycles(data_dir / f"train_{subset}.txt")
     test = _read_cycles(data_dir / f"test_{subset}.txt")
-    return CMAPSSData(train, test, None)
+    rul_test = _read_rul(data_dir / f"RUL_{subset}.txt")
+    # RUL_FDxxx.txt has one line per test engine, in unit order.
+    rul_test.index = pd.Index(sorted(test["unit"].unique()), name="unit")
+    return CMAPSSData(train, test, rul_test)
 
 
 def _read_cycles(path: Path) -> pd.DataFrame:
     """Read one train/test file: 26 space-separated columns, no header."""
     df = pd.read_csv(path, sep=r"\s+", header=None, names=COLUMNS)
     return df.astype({"unit": "int64", "cycle": "int64"})
+
+
+def _read_rul(path: Path) -> pd.Series:
+    """Read an RUL file: one integer per line, one line per test engine."""
+    return pd.read_csv(path, header=None, names=["rul"])["rul"].astype("int64")
