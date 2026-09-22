@@ -57,3 +57,13 @@ def add_test_rul(
     rul_at_last = test["unit"].map(rul_test)
     rul = rul_at_last + (last_cycle - test["cycle"])
     return test.assign(rul=_apply_cap(rul, cap))
+
+
+def last_cycles(df: pd.DataFrame) -> pd.DataFrame:
+    """One row per engine: its last recorded cycle, sorted by ``unit``.
+
+    Test engines are scored at this cycle, where ``rul`` equals the value from
+    ``RUL_FDxxx.txt``.
+    """
+    last = df.sort_values(["unit", "cycle"]).groupby("unit").tail(1)
+    return last.reset_index(drop=True)

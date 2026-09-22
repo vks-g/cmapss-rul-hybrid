@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from rul.data.labels import add_test_rul, add_train_rul
+from rul.data.labels import add_test_rul, add_train_rul, last_cycles
 
 
 def cycles(spec: dict) -> pd.DataFrame:
@@ -75,3 +75,14 @@ def test_test_engine_missing_from_the_rul_file_is_an_error_not_a_nan():
 
     with pytest.raises(ValueError, match=r"no true RUL for test engine\(s\) \[2, 7\]"):
         add_test_rul(test, rul_file({1: 112}))
+
+
+def test_last_cycles_keeps_one_row_per_engine_at_its_final_cycle():
+    # Test engines are scored here: the last cycle carries the RUL_FDxxx value.
+    test = cycles({2: [2, 1], 1: [1, 3, 2]})
+    labelled = add_test_rul(test, rul_file({1: 112, 2: 98}))
+
+    last = last_cycles(labelled)
+
+    assert last[["unit", "cycle", "rul"]].values.tolist() == [[1, 3, 112], [2, 2, 98]]
+    assert last.index.tolist() == [0, 1]
