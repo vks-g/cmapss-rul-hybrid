@@ -56,10 +56,20 @@ def load_subset(subset: str, data_dir: str | Path = DATA_DIR) -> CMAPSSData:
 
 def _read_cycles(path: Path) -> pd.DataFrame:
     """Read one train/test file: 26 space-separated columns, no header."""
-    df = pd.read_csv(path, sep=r"\s+", header=None, names=COLUMNS)
+    df = pd.read_csv(_require_file(path), sep=r"\s+", header=None, names=COLUMNS)
     return df.astype({"unit": "int64", "cycle": "int64"})
 
 
 def _read_rul(path: Path) -> pd.Series:
     """Read an RUL file: one integer per line, one line per test engine."""
-    return pd.read_csv(path, header=None, names=["rul"])["rul"].astype("int64")
+    return pd.read_csv(_require_file(path), header=None, names=["rul"])["rul"].astype("int64")
+
+
+def _require_file(path: Path) -> Path:
+    """Fail early with instructions when a raw data file is missing."""
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{path} not found. The raw data is not committed to git: download "
+            f"the NASA C-MAPSS dataset and extract its .txt files into {path.parent}"
+        )
+    return path

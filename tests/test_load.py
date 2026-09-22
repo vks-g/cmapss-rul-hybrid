@@ -58,3 +58,13 @@ def test_rul_targets_are_indexed_by_test_unit(tmp_path):
 def test_unknown_subset_name_is_rejected(tmp_path, bad_name):
     with pytest.raises(ValueError, match="FD001"):
         load_subset(bad_name, data_dir=tmp_path)
+
+
+def test_missing_data_file_error_names_the_file_and_the_fix(tmp_path):
+    write_subset(tmp_path, train_cycles={1: 3}, test_cycles={1: 2}, rul=[112])
+    (tmp_path / "test_FD001.txt").unlink()
+
+    with pytest.raises(FileNotFoundError, match="test_FD001.txt") as excinfo:
+        load_subset("FD001", data_dir=tmp_path)
+
+    assert "download" in str(excinfo.value).lower()
