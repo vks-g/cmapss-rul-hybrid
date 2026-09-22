@@ -65,3 +65,19 @@ def test_evaluate_buckets_errors_by_degradation_stage():
     assert by_stage["early"]["mae"] == pytest.approx(10)
     assert by_stage["mid"]["mae"] == pytest.approx(5)
     assert by_stage["late"]["mae"] == pytest.approx(4)
+
+
+def test_stage_boundaries_are_inclusive_at_the_top_of_each_bin():
+    # Defaults: late <= 50 < mid <= 100 < early
+    result = evaluate([50, 100, 101], [50, 100, 101])
+
+    assert [result["by_stage"][s]["n"] for s in ("late", "mid", "early")] == [1, 1, 1]
+
+
+def test_stage_bins_are_configurable():
+    # With late <= 30 < mid <= 60, a true RUL of 50 is a mid-stage engine.
+    result = evaluate([50], [55], stage_bins=(30, 60))
+
+    assert result["by_stage"]["mid"]["n"] == 1
+    assert result["by_stage"]["late"]["n"] == 0
+    assert result["stage_bins"] == [30.0, 60.0]
