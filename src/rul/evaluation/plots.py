@@ -98,6 +98,13 @@ def plot_stage_errors(
     """
     if metric not in METRIC_LABELS:
         raise ValueError(f"metric must be one of {', '.join(METRIC_LABELS)}, got {metric!r}")
+    if len(results) > len(SERIES):
+        raise ValueError(
+            f"at most {len(SERIES)} models per chart (got {len(results)}); split them across figures"
+        )
+    bins = {tuple(result["stage_bins"]) for result in results.values()}
+    if len(bins) > 1:
+        raise ValueError(f"all results must use the same stage bins, got {sorted(bins)}")
     ax = _axes(ax)
 
     x = np.arange(len(STAGES))
@@ -108,9 +115,9 @@ def plot_stage_errors(
         ax.bar(x + offset, heights, width=width, color=SERIES[i], edgecolor=SURFACE,
                linewidth=1.5, label=name, zorder=3)
 
-    late_max, mid_max = next(iter(results.values()))["stage_bins"]
-    ax.set_xticks(x, [f"Early\n(RUL > {mid_max:g})", f"Mid\n({late_max:g} < RUL \u2264 {mid_max:g})",
-                      f"Late\n(RUL \u2264 {late_max:g})"])
+    ((late_max, mid_max),) = bins
+    ax.set_xticks(x, [f"Early\n(RUL > {mid_max:g})", f"Mid\n({late_max:g} < RUL ≤ {mid_max:g})",
+                      f"Late\n(RUL ≤ {late_max:g})"])
     ax.grid(False, axis="x")
     ax.set_ylim(bottom=0)
     ax.set_ylabel(METRIC_LABELS[metric])

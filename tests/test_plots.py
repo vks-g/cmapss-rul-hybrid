@@ -1,5 +1,7 @@
 """Tests for rul.evaluation.plots."""
 
+import math
+
 import matplotlib
 
 matplotlib.use("Agg")  # render off-screen; must run before pyplot is imported
@@ -81,3 +83,32 @@ def test_stage_errors_can_show_mae_instead_of_rmse():
 
     assert [b.get_height() for b in ax.containers[0]][:2] == [5, 5]
     assert "MAE" in ax.get_ylabel()
+
+
+def test_stage_errors_leave_an_empty_stage_blank_instead_of_failing():
+    only_early = evaluate([150], [160])  # no mid or late engines
+
+    ax = plot_stage_errors({"Random Forest": only_early})
+
+    heights = [b.get_height() for b in ax.containers[0]]
+    assert heights[0] == 10
+    assert all(math.isnan(h) for h in heights[1:])
+
+
+def test_stage_errors_reject_an_unknown_metric():
+    with pytest.raises(ValueError, match="rmse, mae, nasa_score"):
+        plot_stage_errors({"Random Forest": RF}, metric="r2")
+
+
+def test_stage_errors_refuse_more_models_than_distinct_colours():
+    too_many = {f"model {i}": RF for i in range(9)}
+
+    with pytest.raises(ValueError, match="at most 8 models"):
+        plot_stage_errors(too_many)
+
+
+def test_stage_errors_refuse_results_scored_with_different_stage_bins():
+    other_bins = evaluate([150, 75, 20], [160, 70, 24], stage_bins=(30, 60))
+
+    with pytest.raises(ValueError, match="same stage bins"):
+        plot_stage_errors({"Random Forest": RF, "XGBoost": other_bins})
