@@ -1,6 +1,7 @@
 """Tests for rul.data.labels."""
 
 import pandas as pd
+import pytest
 
 from rul.data.labels import add_train_rul
 
@@ -31,3 +32,17 @@ def test_train_rul_leaves_the_input_frame_untouched():
     add_train_rul(train)
 
     assert "rul" not in train.columns
+
+
+def test_train_rul_cap_flattens_the_early_part_of_the_curve():
+    # Piecewise-linear target: constant at the cap, then falling to 0.
+    train = cycles({1: [1, 2, 3, 4, 5]})
+
+    assert add_train_rul(train, cap=2)["rul"].tolist() == [2, 2, 2, 1, 0]
+    assert add_train_rul(train)["rul"].tolist() == [4, 3, 2, 1, 0]
+
+
+@pytest.mark.parametrize("bad_cap", [0, -5])
+def test_non_positive_cap_is_rejected(bad_cap):
+    with pytest.raises(ValueError, match="cap"):
+        add_train_rul(cycles({1: [1, 2]}), cap=bad_cap)
