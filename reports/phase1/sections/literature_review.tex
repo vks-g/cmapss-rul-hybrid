@@ -60,3 +60,24 @@ penalties whose grouping effect keeps strongly correlated predictors together, w
 suits the redundant C-MAPSS sensors and gives an interpretable linear reference. All
 three consume fixed-length summaries of each engine's recent history, such as rolling
 means and slopes, rather than the raw sequence.
+
+\subsection{Sequence Models and the Research Gap}
+Deep learning removes the hand-crafted summary step. Convolutional networks applied to
+fixed-length windows of raw sensor readings~\cite{SateeshBabu2016deep,Li2018remaining}
+and long short-term memory (LSTM) networks~\cite{Hochreiter1997long,Zheng2017long} have
+reported lower errors on C-MAPSS than the regression baselines they were compared with.
+Zheng et al.~\cite{Zheng2017long} argue that features built from sliding windows do not
+fully use the order of the sensor sequence. Many of these models are also trained
+against a piecewise-linear target that is held constant early in life, when degradation
+is not yet visible in the sensors, and decreases linearly
+afterwards~\cite{Heimes2008recurrent,SateeshBabu2016deep,Zheng2017long,Li2018remaining}.
+
+Two gaps motivate this project. First, fixed rolling features may miss long degradation
+trajectories and interactions whose timing differs from engine to engine, which is what
+sequence models are designed to capture. Second, as Ramasso and
+Saxena~\cite{Ramasso2014performance} showed, published comparisons often differ in the
+subsets, targets and evaluation protocols they use. Phase~1 therefore builds strong
+feature-based baselines under a protocol that stays fixed for Phase~2: splits by engine
+rather than by row, an uncapped RUL target with the capped target treated as an
+ablation, and RMSE, MAE and the asymmetric score reported both overall and by
+degradation stage.
