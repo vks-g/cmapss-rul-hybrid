@@ -1,0 +1,83 @@
+% Literature review (Phase 1). Citation keys resolve against reports/phase1/refs.bib.
+% Papers gathered in the other section issues are merged in when the report is assembled.
+
+\section{Literature Review}
+\label{sec:literature_review}
+
+\subsection{Prognostics and Remaining Useful Life}
+Condition-based maintenance schedules maintenance from the measured condition of a
+machine rather than from a fixed calendar, and prognostics, estimating how long a
+component can keep operating, is its forward-looking half~\cite{Jardine2006review}.
+The quantity to estimate is the remaining useful life (RUL): the number of operating
+cycles left before failure. Reviews group RUL methods into physics-based models,
+which need an explicit model of the failure mechanism; data-driven models, which learn
+degradation from condition-monitoring data; and hybrids of the two~\cite{Lei2018machinery}.
+Statistical data-driven approaches, from regression on degradation signals to
+stochastic-process models, are surveyed by Si et al.~\cite{Si2011remaining}.
+Lei et al.~\cite{Lei2018machinery} divide the data-driven pipeline into data
+acquisition, health-indicator construction, health-stage division and RUL prediction.
+The last two steps motivate our reporting of errors separately for the early, middle
+and late stages of degradation.
+
+\subsection{The C-MAPSS Benchmark}
+Run-to-failure data from real engines is scarce, so simulation fills the gap.
+Saxena et al.~\cite{Saxena2008damage} generated turbofan degradation data with the
+C-MAPSS simulator. Each engine starts from a random, unknown level of initial wear; a
+fault then reduces the flow and efficiency of engine modules at an exponential rate,
+and the engine fails when a health index built from its operating margins reaches zero.
+The resulting data set~\cite{Saxena2008turbofan} contains four subsets, FD001 to FD004,
+that combine one or six operating conditions with one or two fault modes. For test
+engines it gives only a truncated trajectory and the true RUL at its last cycle.
+Saxena et al.~\cite{Saxena2008damage} also defined the asymmetric score used in the
+PHM08 challenge, which penalises late predictions more heavily than early ones because
+an unexpected failure costs more than early maintenance; a broader set of prognostic
+metrics is discussed in~\cite{Saxena2008metrics}. Six years later, Ramasso and
+Saxena~\cite{Ramasso2014performance} reviewed more than seventy publications on these
+data. They found that the absence of benchmark results, together with misunderstandings
+about how the subsets relate, made reported results hard to compare, and they named
+sensor noise, changing operating conditions and multiple fault modes as the main
+difficulties of the benchmark.
+
+\subsection{Feature-Based Machine Learning}
+Early solutions to the PHM08 challenge already show the two directions the field has
+followed. Wang et al.~\cite{Wang2008similarity} built a library of degradation patterns
+from training engines and estimated a test engine's RUL from the lives of the most
+similar patterns, while Heimes~\cite{Heimes2008recurrent} trained a recurrent neural
+network and placed second in the competition. Later work mapped sensor values to RUL
+directly. Khelif et al.~\cite{Khelif2017direct} used support vector regression with
+wrapper-based sensor selection, removing the need to estimate degradation states or a
+failure threshold, and Mathew et al.~\cite{Mathew2017prediction} compared a range of
+classical regressors on the NASA turbofan data.
+
+Our Phase~1 baselines follow this direct-regression line with three model families
+chosen for complementary behaviour. Random forests~\cite{Breiman2001random} average
+many decorrelated regression trees, capturing non-linear sensor interactions with
+little tuning. XGBoost~\cite{Chen2016xgboost} adds trees one at a time, each fitted to
+the gradient of the loss of the current ensemble, with explicit regularisation of tree
+complexity; it usually trades more tuning for higher accuracy. The elastic
+net~\cite{Zou2005regularization} is a linear model with combined $\ell_1$ and $\ell_2$
+penalties whose grouping effect keeps strongly correlated predictors together, which
+suits the redundant C-MAPSS sensors and gives an interpretable linear reference. All
+three consume fixed-length summaries of each engine's recent history, such as rolling
+means and slopes, rather than the raw sequence.
+
+\subsection{Sequence Models and the Research Gap}
+Deep learning removes the hand-crafted summary step. Convolutional networks applied to
+fixed-length windows of raw sensor readings~\cite{SateeshBabu2016deep,Li2018remaining}
+and long short-term memory (LSTM) networks~\cite{Hochreiter1997long,Zheng2017long} have
+reported lower errors on C-MAPSS than the regression baselines they were compared with.
+Zheng et al.~\cite{Zheng2017long} argue that features built from sliding windows do not
+fully use the order of the sensor sequence. Many of these models are also trained
+against a piecewise-linear target that is held constant early in life, when degradation
+is not yet visible in the sensors, and decreases linearly
+afterwards~\cite{Heimes2008recurrent,SateeshBabu2016deep,Zheng2017long,Li2018remaining}.
+
+Two gaps motivate this project. First, fixed rolling features may miss long degradation
+trajectories and interactions whose timing differs from engine to engine, which is what
+sequence models are designed to capture. Second, as Ramasso and
+Saxena~\cite{Ramasso2014performance} showed, published comparisons often differ in the
+subsets, targets and evaluation protocols they use. Phase~1 therefore builds strong
+feature-based baselines under a protocol that stays fixed for Phase~2: splits by engine
+rather than by row, an uncapped RUL target with the capped target treated as an
+ablation, and RMSE, MAE and the asymmetric score reported both overall and by
+degradation stage.
