@@ -1,0 +1,20 @@
+% Literature review (Phase 1). Citation keys resolve against reports/phase1/refs.bib.
+% Papers gathered in the other section issues are merged in when the report is assembled.
+
+\section{Literature Review}
+\label{sec:literature_review}
+
+\subsection{Prognostics and Remaining Useful Life}
+Condition-based maintenance schedules maintenance from the measured condition of a
+machine rather than from a fixed calendar, and prognostics, estimating how long a
+component can keep operating, is its forward-looking half~\cite{Jardine2006review}.
+The quantity to estimate is the remaining useful life (RUL): the number of operating
+cycles left before failure. Reviews group RUL methods into physics-based models,
+which need an explicit model of the failure mechanism; data-driven models, which learn
+degradation from condition-monitoring data; and hybrids of the two~\cite{Lei2018machinery}.
+Statistical data-driven approaches, from regression on degradation signals to
+stochastic-process models, are surveyed by Si et al.~\cite{Si2011remaining}.
+Lei et al.~\cite{Lei2018machinery} divide the data-driven pipeline into data
+acquisition, health-indicator construction, health-stage division and RUL prediction.
+The last two steps motivate our reporting of errors separately for the early, middle
+and late stages of degradation.
