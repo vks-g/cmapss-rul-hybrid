@@ -37,3 +37,26 @@ data. They found that the absence of benchmark results, together with misunderst
 about how the subsets relate, made reported results hard to compare, and they named
 sensor noise, changing operating conditions and multiple fault modes as the main
 difficulties of the benchmark.
+
+\subsection{Feature-Based Machine Learning}
+Early solutions to the PHM08 challenge already show the two directions the field has
+followed. Wang et al.~\cite{Wang2008similarity} built a library of degradation patterns
+from training engines and estimated a test engine's RUL from the lives of the most
+similar patterns, while Heimes~\cite{Heimes2008recurrent} trained a recurrent neural
+network and placed second in the competition. Later work mapped sensor values to RUL
+directly. Khelif et al.~\cite{Khelif2017direct} used support vector regression with
+wrapper-based sensor selection, removing the need to estimate degradation states or a
+failure threshold, and Mathew et al.~\cite{Mathew2017prediction} compared a range of
+classical regressors on the NASA turbofan data.
+
+Our Phase~1 baselines follow this direct-regression line with three model families
+chosen for complementary behaviour. Random forests~\cite{Breiman2001random} average
+many decorrelated regression trees, capturing non-linear sensor interactions with
+little tuning. XGBoost~\cite{Chen2016xgboost} adds trees one at a time, each fitted to
+the gradient of the loss of the current ensemble, with explicit regularisation of tree
+complexity; it usually trades more tuning for higher accuracy. The elastic
+net~\cite{Zou2005regularization} is a linear model with combined $\ell_1$ and $\ell_2$
+penalties whose grouping effect keeps strongly correlated predictors together, which
+suits the redundant C-MAPSS sensors and gives an interpretable linear reference. All
+three consume fixed-length summaries of each engine's recent history, such as rolling
+means and slopes, rather than the raw sequence.
