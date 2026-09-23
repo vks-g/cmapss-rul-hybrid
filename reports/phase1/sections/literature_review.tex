@@ -18,3 +18,22 @@ Lei et al.~\cite{Lei2018machinery} divide the data-driven pipeline into data
 acquisition, health-indicator construction, health-stage division and RUL prediction.
 The last two steps motivate our reporting of errors separately for the early, middle
 and late stages of degradation.
+
+\subsection{The C-MAPSS Benchmark}
+Run-to-failure data from real engines is scarce, so simulation fills the gap.
+Saxena et al.~\cite{Saxena2008damage} generated turbofan degradation data with the
+C-MAPSS simulator. Each engine starts from a random, unknown level of initial wear; a
+fault then reduces the flow and efficiency of engine modules at an exponential rate,
+and the engine fails when a health index built from its operating margins reaches zero.
+The resulting data set~\cite{Saxena2008turbofan} contains four subsets, FD001 to FD004,
+that combine one or six operating conditions with one or two fault modes. For test
+engines it gives only a truncated trajectory and the true RUL at its last cycle.
+Saxena et al.~\cite{Saxena2008damage} also defined the asymmetric score used in the
+PHM08 challenge, which penalises late predictions more heavily than early ones because
+an unexpected failure costs more than early maintenance; a broader set of prognostic
+metrics is discussed in~\cite{Saxena2008metrics}. Six years later, Ramasso and
+Saxena~\cite{Ramasso2014performance} reviewed more than seventy publications on these
+data. They found that the absence of benchmark results, together with misunderstandings
+about how the subsets relate, made reported results hard to compare, and they named
+sensor noise, changing operating conditions and multiple fault modes as the main
+difficulties of the benchmark.
