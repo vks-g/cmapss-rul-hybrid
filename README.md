@@ -18,6 +18,19 @@ Fixed rolling-window features may miss long degradation trajectories and interac
 
 **Fair comparison.** All models share the same engine-level splits (by `unit` id, never by row) and the same metrics: RMSE and MAE on RUL, NASA score, and error by degradation stage (early / mid / late).
 
+Operating-regime normalization uses `rul.features.regimes.RegimeNormalizer`. Fit it on each training fold, then reuse that fitted object for validation and test data:
+
+```python
+from rul.features.regimes import RegimeNormalizer
+
+normalizer = RegimeNormalizer(n_regimes=6, random_state=42)  # FD002 / FD004
+train_scaled = normalizer.fit(train_fold).transform(train_fold)
+valid_scaled = normalizer.transform(validation_fold)
+test_scaled = normalizer.transform(test)
+```
+
+Use `n_regimes=1` for FD001 / FD003. The transform preserves metadata columns, replaces the 21 sensor columns with per-regime z-scores, and adds a `regime` column. Never fit it on validation or test rows.
+
 ## Dataset
 
 NASA C-MAPSS Turbofan Engine Degradation Simulation (Saxena et al., 2008). FD001 is the primary subset; FD002–FD004 are extensions.
