@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from sklearn.cluster import KMeans
+from sklearn.exceptions import NotFittedError
 from sklearn.preprocessing import StandardScaler
 
 from rul.data.load import SENSOR_COLS, SETTING_COLS
@@ -19,6 +20,8 @@ class RegimeNormalizer:
 
     def fit(self, train: pd.DataFrame) -> RegimeNormalizer:
         """Fit regime centers and sensor statistics using training rows only."""
+        if train[SETTING_COLS].drop_duplicates().shape[0] < self.n_regimes:
+            raise ValueError("Fewer distinct operating settings than requested regimes")
         self.kmeans_ = KMeans(
             n_clusters=self.n_regimes, random_state=self.random_state, n_init=10
         ).fit(train[SETTING_COLS])
@@ -31,6 +34,8 @@ class RegimeNormalizer:
 
     def transform(self, frame: pd.DataFrame) -> pd.DataFrame:
         """Assign learned regimes and scale sensors with training statistics."""
+        if not hasattr(self, "kmeans_") or not hasattr(self, "scalers_"):
+            raise NotFittedError("Fit RegimeNormalizer on training rows before transform")
         labels = self.kmeans_.predict(frame[SETTING_COLS])
         scaled = np.empty((len(frame), len(SENSOR_COLS)), dtype=float)
         for label in np.unique(labels):

@@ -2,6 +2,7 @@
 
 import pandas as pd
 import pytest
+from sklearn.exceptions import NotFittedError
 
 from rul.data.load import SENSOR_COLS
 from rul.features.regimes import RegimeNormalizer
@@ -46,3 +47,15 @@ def test_test_rows_use_training_sensor_statistics_within_their_regime():
     assert transformed_train["s_1"].tolist() == pytest.approx([-1, 1, -1, 1])
     assert transformed_test["s_1"].tolist() == pytest.approx([2, 3])
     assert transformed_test["s_2"].tolist() == [0, 0]
+
+
+def test_transform_requires_training_fit():
+    with pytest.raises(NotFittedError):
+        RegimeNormalizer(n_regimes=1).transform(cycles([(1, 1, 0, 5)]))
+
+
+def test_fit_rejects_fewer_distinct_conditions_than_requested_regimes():
+    train = cycles([(1, 1, 0, 0), (2, 1, 0, 2), (3, 1, 10, 100)])
+
+    with pytest.raises(ValueError, match="distinct operating settings"):
+        RegimeNormalizer(n_regimes=3).fit(train)
