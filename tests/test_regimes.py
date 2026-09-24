@@ -1,6 +1,7 @@
 """Tests for training-fitted operating regimes."""
 
 import pandas as pd
+import pytest
 
 from rul.data.load import SENSOR_COLS
 from rul.features.regimes import RegimeNormalizer
@@ -32,3 +33,16 @@ def test_six_regimes_are_detected_from_six_operating_conditions():
 
     assert normalized["regime"].nunique() == 6
     assert held_out["regime"].iloc[0] == normalized["regime"].iloc[8]
+
+
+def test_test_rows_use_training_sensor_statistics_within_their_regime():
+    train = cycles([(1, 1, 0, 0), (2, 1, 0, 2), (3, 1, 10, 100), (4, 1, 10, 104)])
+    test = cycles([(5, 1, 0, 3), (6, 1, 10, 108)])
+
+    normalizer = RegimeNormalizer(n_regimes=2, random_state=42).fit(train)
+    transformed_train = normalizer.transform(train)
+    transformed_test = normalizer.transform(test)
+
+    assert transformed_train["s_1"].tolist() == pytest.approx([-1, 1, -1, 1])
+    assert transformed_test["s_1"].tolist() == pytest.approx([2, 3])
+    assert transformed_test["s_2"].tolist() == [0, 0]
