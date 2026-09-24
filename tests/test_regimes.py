@@ -39,6 +39,9 @@ def test_six_regimes_are_detected_from_six_operating_conditions():
 def test_test_rows_use_training_sensor_statistics_within_their_regime():
     train = cycles([(1, 1, 0, 0), (2, 1, 0, 2), (3, 1, 10, 100), (4, 1, 10, 104)])
     test = cycles([(5, 1, 0, 3), (6, 1, 10, 108)])
+    train.index = [10, 12, 20, 22]  # Fold slices retain their original row index.
+    test.index = [31, 37]
+    original = test.copy(deep=True)
 
     normalizer = RegimeNormalizer(n_regimes=2, random_state=42).fit(train)
     transformed_train = normalizer.transform(train)
@@ -47,6 +50,12 @@ def test_test_rows_use_training_sensor_statistics_within_their_regime():
     assert transformed_train["s_1"].tolist() == pytest.approx([-1, 1, -1, 1])
     assert transformed_test["s_1"].tolist() == pytest.approx([2, 3])
     assert transformed_test["s_2"].tolist() == [0, 0]
+    assert transformed_test["regime"].tolist() == [
+        transformed_train.loc[10, "regime"], transformed_train.loc[20, "regime"]
+    ]
+    assert transformed_test["unit"].tolist() == [5, 6]
+    assert transformed_test.index.tolist() == [31, 37]
+    pd.testing.assert_frame_equal(test, original)
 
 
 def test_transform_requires_training_fit():
