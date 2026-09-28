@@ -1,6 +1,7 @@
 """Causal, per-engine degradation features."""
 
 import pandas as pd
+import pytest
 
 from rul.features.rolling import add_rolling_features
 
@@ -43,3 +44,11 @@ def test_health_indicator_compares_recent_mean_with_first_engine_cycle():
 
     assert result["s_1_health_2"].tolist() == [0.0, 1.0, 0.0, 3.0, 0.5]
     assert result["cycle"].tolist() == frame["cycle"].tolist()
+
+
+@pytest.mark.parametrize("windows", [[], [0], [-2], [2, 2], [1.5]])
+def test_rolling_windows_must_be_distinct_positive_integers(windows):
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2], "s_1": [1.0, 2.0]})
+
+    with pytest.raises(ValueError, match="windows"):
+        add_rolling_features(frame, sensors=["s_1"], windows=windows)

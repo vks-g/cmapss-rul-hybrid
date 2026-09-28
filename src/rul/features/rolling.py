@@ -1,6 +1,7 @@
 """Causal degradation features computed within each engine."""
 
 from collections.abc import Sequence
+from numbers import Integral
 
 import numpy as np
 import pandas as pd
@@ -14,6 +15,15 @@ def add_rolling_features(
     windows: Sequence[int] = (5, 10, 20),
 ) -> pd.DataFrame:
     """Add trailing means, slopes, and change from each engine's first cycle."""
+    if (
+        not windows
+        or any(
+            not isinstance(window, Integral) or isinstance(window, bool) or window <= 0
+            for window in windows
+        )
+        or len(set(windows)) != len(windows)
+    ):
+        raise ValueError("windows must contain distinct positive integers")
     order = np.lexsort(
         (np.arange(len(frame)), frame["cycle"].to_numpy(), frame["unit"].to_numpy())
     )
