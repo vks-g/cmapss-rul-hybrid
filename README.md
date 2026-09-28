@@ -61,17 +61,37 @@ The raw data is not committed. Download instructions are under Setup.
 
 ## Setup & reproduce
 
-_To be added._
+Install with `pip install -r requirements.txt && pip install -e .`. Place the NASA C-MAPSS
+`train_FD001.txt`, `test_FD001.txt`, and `RUL_FD001.txt` files under
+`data/raw/CMAPSSData/`; raw data is not committed.
+
+The FD001 ML baseline uses cycle, three operating settings, and 21 raw sensors. It
+holds out 20% of engines, tunes each model with three engine-level folds on the
+remaining engines, then scores the holdout with the shared metrics. To regenerate
+`configs/ml_baseline.yaml`:
+
+```python
+from rul.data.labels import add_train_rul
+from rul.data.load import SENSOR_COLS, SETTING_COLS, load_subset
+from rul.models.ml import run_baselines, save_best_parameters
+
+data = add_train_rul(load_subset("FD001").train)
+features = ["cycle", *SETTING_COLS, *SENSOR_COLS]
+report = run_baselines(data, features, validation_size=0.2, n_splits=3, seed=42)
+save_best_parameters(report, "configs/ml_baseline.yaml", subset="FD001", feature_columns=features)
+print({name: result["holdout"] for name, result in report["models"].items()})
+```
 
 ## Results
 
-_To be filled in as experiments complete._
+FD001 raw-feature baselines, seed 42, 80 training engines and 20 held-out engines.
+Scores cover every held-out cycle; NASA scores therefore sum across all those cycles.
 
 | Model | RMSE | MAE | NASA score |
 |---|---|---|---|
-| Random Forest | – | – | – |
-| XGBoost | – | – | – |
-| Elastic Net | – | – | – |
+| Random Forest | 31.34 | 23.76 | 322,401.91 |
+| XGBoost | 30.90 | 23.54 | 265,626.25 |
+| Elastic Net | 31.74 | 25.20 | 316,560.07 |
 | LSTM | – | – | – |
 | Temporal CNN | – | – | – |
 | Transformer | – | – | – |

@@ -69,10 +69,12 @@ def test_run_holds_out_engines_before_tuning_and_uses_shared_metrics(monkeypatch
     assert len(report["split"]["validation_units"]) == 2
     assert report["models"]["random_forest"]["holdout"]["n"] == 6
     assert report["models"]["random_forest"]["best_params"] == {"n_estimators": 2}
+    assert report["n_splits"] == 2
+    assert report["validation_size"] == 2
 
 
 def test_best_parameter_config_records_run_context(tmp_path):
-    report = {"seed": 9, "models": {
+    report = {"seed": 9, "n_splits": 2, "validation_size": 2, "models": {
         "random_forest": {"best_params": {"n_estimators": 2}, "cv_rmse": 4.2}
     }}
     path = tmp_path / "ml_baseline.yaml"
@@ -82,5 +84,7 @@ def test_best_parameter_config_records_run_context(tmp_path):
     saved = yaml.safe_load(path.read_text())
     assert saved["subset"] == "FD001"
     assert saved["seed"] == 9
+    assert saved["n_splits"] == 2
+    assert saved["validation_size"] == 2
     assert saved["feature_columns"] == ["sensor"]
     assert saved["models"]["random_forest"]["best_params"] == {"n_estimators": 2}

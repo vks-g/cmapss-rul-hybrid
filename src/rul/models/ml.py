@@ -92,6 +92,8 @@ def run_baselines(
         }
     return {
         "seed": seed,
+        "n_splits": n_splits,
+        "validation_size": validation_size,
         "split": {
             "train_units": sorted(int(unit) for unit in training["unit"].unique()),
             "validation_units": sorted(int(unit) for unit in validation["unit"].unique()),
@@ -111,6 +113,8 @@ def save_best_parameters(
     config = {
         "subset": subset,
         "seed": report["seed"],
+        "n_splits": report["n_splits"],
+        "validation_size": report["validation_size"],
         "feature_columns": list(feature_columns),
         "models": {
             name: {
