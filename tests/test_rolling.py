@@ -1,8 +1,11 @@
 """Causal, per-engine degradation features."""
 
+import warnings
+
 import pandas as pd
 import pytest
 
+from rul.data.load import SENSOR_COLS
 from rul.features.rolling import add_rolling_features
 
 
@@ -66,3 +69,17 @@ def test_unsorted_rows_use_cycle_history_and_preserve_input_order():
     assert result["s_1_mean_2"].tolist() == [6.0, 1.0, 2.0]
     assert result["s_1_slope_2"].tolist() == [6.0, 0.0, 2.0]
     assert result["s_1_health_2"].tolist() == [5.0, 0.0, 1.0]
+
+
+def test_many_sensor_features_do_not_fragment_dataframe():
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2]})
+    for sensor in SENSOR_COLS:
+        frame[sensor] = [1.0, 2.0]
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", pd.errors.PerformanceWarning)
+        add_rolling_features(frame, windows=[2, 3])
+
+    assert not any(
+        issubclass(item.category, pd.errors.PerformanceWarning) for item in caught
+    )
