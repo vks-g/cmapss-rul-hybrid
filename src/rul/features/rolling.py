@@ -33,6 +33,8 @@ def add_rolling_features(
     collisions = new_columns.intersection(frame.columns)
     if collisions:
         raise ValueError(f"Rolling feature columns already exist: {sorted(collisions)}")
+    if frame[list(sensors)].isna().to_numpy().any():
+        raise ValueError("Input contains missing sensor readings")
     order = np.lexsort(
         (np.arange(len(frame)), frame["cycle"].to_numpy(), frame["unit"].to_numpy())
     )
