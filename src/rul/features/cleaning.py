@@ -16,9 +16,12 @@ def select_sensors(
     """Return training sensors with relative standard deviation above the cutoff."""
     if not isfinite(min_relative_std) or min_relative_std < 0:
         raise ValueError("min_relative_std must be finite and nonnegative")
-    return [
+    kept = [
         sensor
         for sensor in sensors
         if train[sensor].std(ddof=0) / max(abs(train[sensor].mean()), 1.0)
         > min_relative_std
     ]
+    if not kept:
+        raise ValueError("No sensors exceeded the training variability cutoff")
+    return kept

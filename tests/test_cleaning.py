@@ -29,3 +29,10 @@ def test_select_sensors_rejects_invalid_cutoff(cutoff):
 
     with pytest.raises(ValueError, match="min_relative_std"):
         select_sensors(train, ["s_1"], min_relative_std=cutoff)
+
+
+def test_select_sensors_rejects_training_fold_without_useful_sensors():
+    train = pd.DataFrame({"s_1": [5.0, 5.0]})
+
+    with pytest.raises(ValueError, match="No sensors"):
+        select_sensors(train, ["s_1"])
