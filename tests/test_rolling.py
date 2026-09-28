@@ -52,3 +52,17 @@ def test_rolling_windows_must_be_distinct_positive_integers(windows):
 
     with pytest.raises(ValueError, match="windows"):
         add_rolling_features(frame, sensors=["s_1"], windows=windows)
+
+
+def test_unsorted_rows_use_cycle_history_and_preserve_input_order():
+    frame = pd.DataFrame(
+        {"unit": [1, 1, 1], "cycle": [3, 1, 2], "s_1": [9.0, 1.0, 3.0]},
+        index=[9, 7, 8],
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    assert result.index.tolist() == [9, 7, 8]
+    assert result["s_1_mean_2"].tolist() == [6.0, 1.0, 2.0]
+    assert result["s_1_slope_2"].tolist() == [6.0, 0.0, 2.0]
+    assert result["s_1_health_2"].tolist() == [5.0, 0.0, 1.0]
