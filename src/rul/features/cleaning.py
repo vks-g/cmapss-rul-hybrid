@@ -8,7 +8,14 @@ from rul.data.load import SENSOR_COLS
 
 
 def select_sensors(
-    train: pd.DataFrame, sensors: Sequence[str] = SENSOR_COLS
+    train: pd.DataFrame,
+    sensors: Sequence[str] = SENSOR_COLS,
+    min_relative_std: float = 0.0,
 ) -> list[str]:
-    """Return sensors that vary in the supplied training fold."""
-    return [sensor for sensor in sensors if train[sensor].nunique(dropna=False) > 1]
+    """Return training sensors with relative standard deviation above the cutoff."""
+    return [
+        sensor
+        for sensor in sensors
+        if train[sensor].std(ddof=0) / max(abs(train[sensor].mean()), 1.0)
+        > min_relative_std
+    ]
