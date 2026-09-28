@@ -100,3 +100,12 @@ def test_missing_sensor_reading_is_rejected_before_slope_calculation():
 
     with pytest.raises(ValueError, match="missing sensor"):
         add_rolling_features(frame, sensors=["s_1"], windows=[3])
+
+
+def test_duplicate_engine_cycle_is_rejected_as_ambiguous_history():
+    frame = pd.DataFrame(
+        {"unit": [1, 1], "cycle": [2, 2], "s_1": [1.0, 2.0]}
+    )
+
+    with pytest.raises(ValueError, match="unit/cycle"):
+        add_rolling_features(frame, sensors=["s_1"], windows=[2])
