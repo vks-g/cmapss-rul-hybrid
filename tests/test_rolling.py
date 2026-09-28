@@ -32,3 +32,14 @@ def test_rolling_slope_uses_trailing_cycles_only():
     result = add_rolling_features(frame, sensors=["s_1"], windows=[3])
 
     assert result["s_1_slope_3"].tolist() == [0.0, 2.0, 2.0, 48.5, 0.0, 1.0]
+
+
+def test_health_indicator_compares_recent_mean_with_first_engine_cycle():
+    frame = pd.DataFrame(
+        {"unit": [1, 1, 2, 1, 2], "cycle": [1, 2, 1, 3, 2], "s_1": [1, 3, 10, 5, 11]}
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    assert result["s_1_health_2"].tolist() == [0.0, 1.0, 0.0, 3.0, 0.5]
+    assert result["cycle"].tolist() == frame["cycle"].tolist()

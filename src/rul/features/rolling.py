@@ -13,7 +13,7 @@ def add_rolling_features(
     sensors: Sequence[str] = SENSOR_COLS,
     windows: Sequence[int] = (5, 10, 20),
 ) -> pd.DataFrame:
-    """Add trailing sensor means and slopes without mixing engines."""
+    """Add trailing means, slopes, and change from each engine's first cycle."""
     order = np.lexsort(
         (np.arange(len(frame)), frame["cycle"].to_numpy(), frame["unit"].to_numpy())
     )
@@ -33,6 +33,10 @@ def add_rolling_features(
             result[f"{sensor}_mean_{window}"] = result.groupby("unit", sort=False)[
                 sensor
             ].transform(lambda values: values.rolling(window, min_periods=1).mean())
+            initial = result.groupby("unit", sort=False)[sensor].transform("first")
+            result[f"{sensor}_health_{window}"] = (
+                result[f"{sensor}_mean_{window}"] - initial
+            )
             values = result[sensor]
             numerator = (
                 count.to_numpy() * rolling_sum(cycle * values)
