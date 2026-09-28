@@ -24,6 +24,15 @@ def add_rolling_features(
         or len(set(windows)) != len(windows)
     ):
         raise ValueError("windows must contain distinct positive integers")
+    new_columns = {
+        f"{sensor}_{feature}_{window}"
+        for sensor in sensors
+        for window in windows
+        for feature in ("mean", "slope", "health")
+    }
+    collisions = new_columns.intersection(frame.columns)
+    if collisions:
+        raise ValueError(f"Rolling feature columns already exist: {sorted(collisions)}")
     order = np.lexsort(
         (np.arange(len(frame)), frame["cycle"].to_numpy(), frame["unit"].to_numpy())
     )

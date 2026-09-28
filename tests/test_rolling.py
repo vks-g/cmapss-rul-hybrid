@@ -83,3 +83,11 @@ def test_many_sensor_features_do_not_fragment_dataframe():
     assert not any(
         issubclass(item.category, pd.errors.PerformanceWarning) for item in caught
     )
+
+
+def test_repeated_feature_generation_rejects_column_collisions():
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2], "s_1": [1.0, 2.0]})
+    features = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    with pytest.raises(ValueError, match="already exist"):
+        add_rolling_features(features, sensors=["s_1"], windows=[2])
