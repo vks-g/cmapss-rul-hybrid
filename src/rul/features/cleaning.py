@@ -19,7 +19,8 @@ def select_sensors(
     kept = [
         sensor
         for sensor in sensors
-        if train[sensor].std(ddof=0) / max(abs(train[sensor].mean()), 1.0)
+        if train[sensor].nunique(dropna=False) > 1
+        and train[sensor].std(ddof=0) / max(abs(train[sensor].mean()), 1.0)
         > min_relative_std
     ]
     if not kept:

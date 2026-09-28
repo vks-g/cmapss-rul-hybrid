@@ -36,3 +36,11 @@ def test_select_sensors_rejects_training_fold_without_useful_sensors():
 
     with pytest.raises(ValueError, match="No sensors"):
         select_sensors(train, ["s_1"])
+
+
+def test_select_sensors_drops_float_constant_despite_roundoff():
+    train = pd.DataFrame(
+        {"s_1": [14.62] * 7, "s_2": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}
+    )
+
+    assert select_sensors(train, ["s_1", "s_2"]) == ["s_2"]
