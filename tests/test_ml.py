@@ -4,7 +4,8 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 
-from rul.models.ml import make_models, tune_models
+import rul.models.ml as ml
+from rul.models.ml import make_models, run_baselines, tune_models
 
 
 def sample_engines() -> pd.DataFrame:
@@ -43,3 +44,27 @@ def test_tuning_uses_engine_grouped_folds_and_best_parameters():
         train_units = set(data.iloc[train_idx]["unit"])
         valid_units = set(data.iloc[valid_idx]["unit"])
         assert train_units.isdisjoint(valid_units)
+
+
+def test_run_holds_out_engines_before_tuning_and_uses_shared_metrics(monkeypatch):
+    data = sample_engines()
+    seen_units = []
+    real_tune = ml.tune_models
+
+    def capture_training_data(training_data, *args, **kwargs):
+        seen_units.extend(training_data["unit"].unique())
+        return real_tune(training_data, *args, **kwargs)
+
+    monkeypatch.setattr(ml, "tune_models", capture_training_data)
+    report = run_baselines(
+        data, ["sensor"],
+        models={"random_forest": RandomForestRegressor(random_state=9)},
+        param_grids={"random_forest": {"n_estimators": [2]}},
+        validation_size=2, n_splits=2, seed=9,
+    )
+
+    assert set(seen_units) == set(report["split"]["train_units"])
+    assert set(seen_units).isdisjoint(report["split"]["validation_units"])
+    assert len(report["split"]["validation_units"]) == 2
+    assert report["models"]["random_forest"]["holdout"]["n"] == 6
+    assert report["models"]["random_forest"]["best_params"] == {"n_estimators": 2}

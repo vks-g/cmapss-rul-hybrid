@@ -9,7 +9,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
 
-from rul.data.split import group_kfold_splits
+from rul.data.split import group_kfold_splits, holdout_split
+from rul.evaluation.metrics import evaluate
 
 
 DEFAULT_PARAM_GRIDS = {
@@ -58,3 +59,39 @@ def tune_models(
         search.fit(data.loc[:, feature_columns], data["rul"])
         searches[name] = search
     return searches
+
+
+def run_baselines(
+    data,
+    feature_columns,
+    *,
+    models=None,
+    param_grids=None,
+    validation_size: float | int = 0.2,
+    n_splits: int = 5,
+    seed: int = 42,
+) -> dict:
+    """Tune on training engines and score once on held-out engines."""
+    train_idx, validation_idx = holdout_split(data, validation_size, seed)
+    training = data.iloc[train_idx]
+    validation = data.iloc[validation_idx]
+    searches = tune_models(
+        training, feature_columns, models=models, param_grids=param_grids,
+        n_splits=n_splits, seed=seed,
+    )
+    scores = {}
+    for name, search in searches.items():
+        prediction = search.predict(validation.loc[:, feature_columns])
+        scores[name] = {
+            "best_params": search.best_params_,
+            "cv_rmse": -float(search.best_score_),
+            "holdout": evaluate(validation["rul"], prediction),
+        }
+    return {
+        "seed": seed,
+        "split": {
+            "train_units": sorted(int(unit) for unit in training["unit"].unique()),
+            "validation_units": sorted(int(unit) for unit in validation["unit"].unique()),
+        },
+        "models": scores,
+    }
