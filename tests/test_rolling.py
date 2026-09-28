@@ -1,0 +1,111 @@
+"""Causal, per-engine degradation features."""
+
+import warnings
+
+import pandas as pd
+import pytest
+
+from rul.data.load import SENSOR_COLS
+from rul.features.rolling import add_rolling_features
+
+
+def test_rolling_mean_uses_only_past_cycles_of_same_engine():
+    frame = pd.DataFrame(
+        {
+            "unit": [1, 2, 1, 2, 1],
+            "cycle": [1, 1, 2, 2, 3],
+            "s_1": [1.0, 10.0, 3.0, 12.0, 100.0],
+        }
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    assert result["s_1_mean_2"].tolist() == [1.0, 10.0, 2.0, 11.0, 51.5]
+    assert result.index.equals(frame.index)
+
+
+def test_rolling_slope_uses_trailing_cycles_only():
+    frame = pd.DataFrame(
+        {
+            "unit": [1, 1, 1, 1, 2, 2],
+            "cycle": [1, 2, 3, 4, 1, 2],
+            "s_1": [1.0, 3.0, 5.0, 100.0, 10.0, 11.0],
+        }
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[3])
+
+    assert result["s_1_slope_3"].tolist() == [0.0, 2.0, 2.0, 48.5, 0.0, 1.0]
+
+
+def test_health_indicator_compares_recent_mean_with_first_engine_cycle():
+    frame = pd.DataFrame(
+        {"unit": [1, 1, 2, 1, 2], "cycle": [1, 2, 1, 3, 2], "s_1": [1, 3, 10, 5, 11]}
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    assert result["s_1_health_2"].tolist() == [0.0, 1.0, 0.0, 3.0, 0.5]
+    assert result["cycle"].tolist() == frame["cycle"].tolist()
+
+
+@pytest.mark.parametrize("windows", [[], [0], [-2], [2, 2], [1.5]])
+def test_rolling_windows_must_be_distinct_positive_integers(windows):
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2], "s_1": [1.0, 2.0]})
+
+    with pytest.raises(ValueError, match="windows"):
+        add_rolling_features(frame, sensors=["s_1"], windows=windows)
+
+
+def test_unsorted_rows_use_cycle_history_and_preserve_input_order():
+    frame = pd.DataFrame(
+        {"unit": [1, 1, 1], "cycle": [3, 1, 2], "s_1": [9.0, 1.0, 3.0]},
+        index=[9, 7, 8],
+    )
+
+    result = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    assert result.index.tolist() == [9, 7, 8]
+    assert result["s_1_mean_2"].tolist() == [6.0, 1.0, 2.0]
+    assert result["s_1_slope_2"].tolist() == [6.0, 0.0, 2.0]
+    assert result["s_1_health_2"].tolist() == [5.0, 0.0, 1.0]
+
+
+def test_many_sensor_features_do_not_fragment_dataframe():
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2]})
+    for sensor in SENSOR_COLS:
+        frame[sensor] = [1.0, 2.0]
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", pd.errors.PerformanceWarning)
+        add_rolling_features(frame, windows=[2, 3])
+
+    assert not any(
+        issubclass(item.category, pd.errors.PerformanceWarning) for item in caught
+    )
+
+
+def test_repeated_feature_generation_rejects_column_collisions():
+    frame = pd.DataFrame({"unit": [1, 1], "cycle": [1, 2], "s_1": [1.0, 2.0]})
+    features = add_rolling_features(frame, sensors=["s_1"], windows=[2])
+
+    with pytest.raises(ValueError, match="already exist"):
+        add_rolling_features(features, sensors=["s_1"], windows=[2])
+
+
+def test_missing_sensor_reading_is_rejected_before_slope_calculation():
+    frame = pd.DataFrame(
+        {"unit": [1, 1, 1], "cycle": [1, 2, 3], "s_1": [1.0, float("nan"), 3.0]}
+    )
+
+    with pytest.raises(ValueError, match="missing sensor"):
+        add_rolling_features(frame, sensors=["s_1"], windows=[3])
+
+
+def test_duplicate_engine_cycle_is_rejected_as_ambiguous_history():
+    frame = pd.DataFrame(
+        {"unit": [1, 1], "cycle": [2, 2], "s_1": [1.0, 2.0]}
+    )
+
+    with pytest.raises(ValueError, match="unit/cycle"):
+        add_rolling_features(frame, sensors=["s_1"], windows=[2])
