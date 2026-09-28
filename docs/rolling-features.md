@@ -18,6 +18,11 @@ far (`min_periods=1`). No feature reads later cycles or rows from another
 engine. Window sizes are distinct positive integers; the default is
 `(5, 10, 20)`.
 
+Inputs must have one row per `(unit, cycle)` and no missing selected sensor
+values. The function rejects duplicate cycles, missing readings, and existing
+columns with the generated feature names; it does not silently overwrite
+features from an earlier call.
+
 ```python
 from rul.features.rolling import add_rolling_features
 
