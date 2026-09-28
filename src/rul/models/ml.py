@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import ElasticNet
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBRegressor
+import yaml
 
 from rul.data.split import group_kfold_splits, holdout_split
 from rul.evaluation.metrics import evaluate
@@ -95,3 +98,26 @@ def run_baselines(
         },
         "models": scores,
     }
+
+
+def save_best_parameters(
+    report: dict,
+    path: str | Path,
+    *,
+    subset: str,
+    feature_columns,
+) -> None:
+    """Save cross-validated parameters with enough context to repeat the run."""
+    config = {
+        "subset": subset,
+        "seed": report["seed"],
+        "feature_columns": list(feature_columns),
+        "models": {
+            name: {
+                "best_params": result["best_params"],
+                "cv_rmse": result["cv_rmse"],
+            }
+            for name, result in report["models"].items()
+        },
+    }
+    Path(path).write_text(yaml.safe_dump(config, sort_keys=False))

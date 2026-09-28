@@ -1,11 +1,12 @@
 """ML baseline behavior on small, engine-grouped datasets."""
 
 import pandas as pd
+import yaml
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.pipeline import Pipeline
 
 import rul.models.ml as ml
-from rul.models.ml import make_models, run_baselines, tune_models
+from rul.models.ml import make_models, run_baselines, save_best_parameters, tune_models
 
 
 def sample_engines() -> pd.DataFrame:
@@ -68,3 +69,18 @@ def test_run_holds_out_engines_before_tuning_and_uses_shared_metrics(monkeypatch
     assert len(report["split"]["validation_units"]) == 2
     assert report["models"]["random_forest"]["holdout"]["n"] == 6
     assert report["models"]["random_forest"]["best_params"] == {"n_estimators": 2}
+
+
+def test_best_parameter_config_records_run_context(tmp_path):
+    report = {"seed": 9, "models": {
+        "random_forest": {"best_params": {"n_estimators": 2}, "cv_rmse": 4.2}
+    }}
+    path = tmp_path / "ml_baseline.yaml"
+
+    save_best_parameters(report, path, subset="FD001", feature_columns=["sensor"])
+
+    saved = yaml.safe_load(path.read_text())
+    assert saved["subset"] == "FD001"
+    assert saved["seed"] == 9
+    assert saved["feature_columns"] == ["sensor"]
+    assert saved["models"]["random_forest"]["best_params"] == {"n_estimators": 2}
