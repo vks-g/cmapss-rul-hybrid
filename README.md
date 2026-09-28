@@ -31,18 +31,18 @@ test_scaled = normalizer.transform(test)
 
 Use `n_regimes=1` for FD001 / FD003. The transform preserves metadata columns, replaces the 21 sensor columns with per-regime z-scores, and adds a `regime` column. Never fit it on validation or test rows.
 
-Select sensors separately inside each training fold, after any regime normalization:
+Select sensors separately from the **raw training fold**, before regime normalization. Apply the resulting list to normalized train, validation, and test rows:
 
 ```python
 from rul.features.cleaning import select_sensors
 
-kept_sensors = select_sensors(train_scaled)
+kept_sensors = select_sensors(train_fold)
 train_features = train_scaled[kept_sensors]
 valid_features = valid_scaled[kept_sensors]
 test_features = test_scaled[kept_sensors]
 ```
 
-The default rule drops exactly constant training sensors; an optional `min_relative_std` cutoff can also remove nearly flat signals. Relative standard deviation is `std(ddof=0) / max(abs(mean), 1)` on training rows. Choose any nonzero cutoff using training data only, then reuse the returned sensor list for validation and test. The [EDA notebook](notebooks/phase1/01_eda.ipynb) found six constant sensors in pooled FD001 training data (`s_1`, `s_5`, `s_10`, `s_16`, `s_18`, `s_19`) and five in FD003 (`s_1`, `s_5`, `s_16`, `s_18`, `s_19`); FD002/FD004 had none when pooled across regimes. Its near-constant candidates are exploratory, so the default rule does not remove them automatically.
+The default rule drops exactly constant training sensors; an optional `min_relative_std` cutoff can also remove nearly flat signals. Relative standard deviation is `std(ddof=0) / max(abs(mean), 1)` on **raw training rows**. Choose any nonzero cutoff using training data only, then reuse the returned sensor list for validation and test. Do not estimate relative variability after z-score normalization, which gives varying sensors roughly unit standard deviation. The [EDA notebook](notebooks/phase1/01_eda.ipynb) found six constant sensors in pooled FD001 training data (`s_1`, `s_5`, `s_10`, `s_16`, `s_18`, `s_19`) and five in FD003 (`s_1`, `s_5`, `s_16`, `s_18`, `s_19`); FD002/FD004 had none when pooled across regimes. Its near-constant candidates are exploratory, so the default rule does not remove them automatically.
 
 ## Dataset
 

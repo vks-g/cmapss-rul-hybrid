@@ -13,7 +13,7 @@ def select_sensors(
     sensors: Sequence[str] = SENSOR_COLS,
     min_relative_std: float = 0.0,
 ) -> list[str]:
-    """Return training sensors with relative standard deviation above the cutoff."""
+    """Return raw training sensors with relative standard deviation above the cutoff."""
     if not isfinite(min_relative_std) or min_relative_std < 0:
         raise ValueError("min_relative_std must be finite and nonnegative")
     kept = [

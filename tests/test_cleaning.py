@@ -2,6 +2,7 @@
 
 import pandas as pd
 import pytest
+from sklearn.preprocessing import StandardScaler
 
 from rul.features.cleaning import select_sensors
 
@@ -44,3 +45,14 @@ def test_select_sensors_drops_float_constant_despite_roundoff():
     )
 
     assert select_sensors(train, ["s_1", "s_2"]) == ["s_2"]
+
+
+def test_raw_training_choice_is_reused_on_scaled_validation_rows():
+    train = pd.DataFrame({"s_1": [999.99, 1000.0, 1000.01], "s_2": [1.0, 2.0, 3.0]})
+    validation = pd.DataFrame({"s_1": [800.0, 1200.0], "s_2": [4.0, 5.0]})
+    kept = select_sensors(train, ["s_1", "s_2"], min_relative_std=0.001)
+    scaler = StandardScaler().fit(train)
+    scaled_validation = pd.DataFrame(scaler.transform(validation), columns=train.columns)
+
+    assert kept == ["s_2"]
+    assert scaled_validation[kept].columns.tolist() == kept
