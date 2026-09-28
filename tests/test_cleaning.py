@@ -1,6 +1,7 @@
 """Training-only selection of useful sensor columns."""
 
 import pandas as pd
+import pytest
 
 from rul.features.cleaning import select_sensors
 
@@ -20,3 +21,11 @@ def test_select_sensors_can_drop_nearly_flat_training_signals():
     )
 
     assert select_sensors(train, ["s_1", "s_2"], min_relative_std=0.001) == ["s_2"]
+
+
+@pytest.mark.parametrize("cutoff", [-0.1, float("nan"), float("inf")])
+def test_select_sensors_rejects_invalid_cutoff(cutoff):
+    train = pd.DataFrame({"s_1": [1.0, 2.0]})
+
+    with pytest.raises(ValueError, match="min_relative_std"):
+        select_sensors(train, ["s_1"], min_relative_std=cutoff)
