@@ -1,9 +1,11 @@
 """Final feature matrices keep test data out of fitted preprocessing."""
 
+import json
+
 import pandas as pd
 
 from rul.data.load import SENSOR_COLS, SETTING_COLS
-from rul.features.matrix import build_feature_matrices
+from rul.features.matrix import build_feature_matrices, save_feature_matrices
 
 
 def cycles(offset: float = 0.0, length: int = 3) -> pd.DataFrame:
@@ -30,3 +32,24 @@ def test_final_matrices_fit_on_train_and_keep_test_targets_out():
     assert matrices.test["s_2"].min() > 50  # Uses train statistics, not test statistics.
     assert (matrices.train.groupby("unit")["s_2_health_2"].first() == 0).all()
     assert (matrices.test.groupby("unit")["s_2_health_2"].first() == 0).all()
+
+
+def test_save_matrices_writes_reproducible_manifest(tmp_path):
+    matrices = build_feature_matrices(cycles(), cycles(length=2), n_regimes=1, windows=(2,))
+
+    paths = save_feature_matrices(
+        matrices, tmp_path / "processed", subset="FD001",
+    )
+
+    saved_train = pd.read_csv(paths["train"])
+    saved_test = pd.read_csv(paths["test"])
+    manifest = json.loads(paths["manifest"].read_text())
+    assert list(saved_train.columns) == list(matrices.train.columns)
+    assert list(saved_test.columns) == list(matrices.test.columns)
+    assert "rul" not in saved_test
+    assert manifest["feature_columns"] == matrices.feature_columns
+    assert manifest["sensors"] == ["s_2"]
+    assert manifest["n_regimes"] == 1
+    assert manifest["windows"] == [2]
+    assert manifest["train_rows"] == 6
+    assert manifest["test_rows"] == 4
