@@ -4,7 +4,10 @@ import numpy as np
 import pandas as pd
 
 from rul.data.load import SENSOR_COLS, SETTING_COLS
-from rul.models.experiment import EngineFeatures
+from sklearn.model_selection import GridSearchCV
+
+from rul.data.split import group_kfold_splits
+from rul.models.experiment import EngineFeatures, make_comparison_models, COMPARISON_GRIDS
 
 
 def sample_cycles(offset=0.0):
@@ -39,3 +42,18 @@ def test_raw_transform_preserves_sensor_values_without_metadata_or_target():
 
     assert result["s_2"].tolist() == data["s_2"].tolist()
     assert list(result.columns) == ["cycle", *SETTING_COLS, *SENSOR_COLS]
+
+
+def test_comparison_pipelines_support_grouped_search_and_nested_elastic_scaling():
+    data = sample_cycles()
+    models = make_comparison_models(engineered=True, seed=9)
+    assert set(models) == {"random_forest", "xgboost", "elastic_net"}
+    assert models["elastic_net"].named_steps["model"].named_steps["scaler"] is not None
+    for name, pipeline in models.items():
+        pipeline.set_params(**{key: values[0] for key, values in COMPARISON_GRIDS[name].items()})
+    search = GridSearchCV(models["random_forest"], {"model__n_estimators": [2]},
+                          cv=list(group_kfold_splits(data, 2, seed=9)),
+                          scoring="neg_root_mean_squared_error")
+    search.fit(data, data["rul"])
+    assert np.isfinite(search.predict(data)).all()
+    assert search.best_estimator_.named_steps["features"].sensors_ == ["s_2"]
