@@ -40,3 +40,22 @@ explanations, not evidence of a causal effect on engine life.
 The executed notebook contains selected parameters, every CV candidate,
 the comparison plot, stage metrics, SHAP tables, and plots. It does not export
 model checkpoints or modify the baseline YAML configuration.
+
+## Observed internal validation
+
+| Model | Raw CV RMSE | Engineered CV RMSE | Raw holdout RMSE | Engineered holdout RMSE |
+|---|---:|---:|---:|---:|
+| Random Forest | 39.158 | 39.265 | 30.759 | 26.472 |
+| XGBoost | 39.892 | 40.871 | 30.904 | 30.330 |
+| Elastic Net | 42.651 | 42.882 | 31.740 | 33.628 |
+
+The trees improve on this holdout, while Elastic Net worsens. None improves
+mean CV RMSE, so the holdout gains do not establish a general advantage for
+engineered features. Engineered XGBoost also has a higher NASA score despite
+its slightly lower holdout RMSE; the metrics measure different error costs.
+
+Both variants select Random Forest with 100 trees and minimum leaf size 3,
+and XGBoost with 100 trees and maximum depth 3. Raw Elastic Net selects
+alpha 0.1 and l1 ratio 0.8; engineered Elastic Net selects alpha 1.0 and
+l1 ratio 0.2. The notebook uses the additional fixed model settings documented
+above and the baseline factory's defaults.
