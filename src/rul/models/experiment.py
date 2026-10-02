@@ -23,13 +23,16 @@ COMPARISON_GRIDS = {
 class EngineFeatures(TransformerMixin, BaseEstimator):
     """Keep engine metadata for causal transforms, then return predictors only."""
 
-    def __init__(self, engineered=False, n_regimes=1, windows=(5, 10, 20), seed=42):
+    def __init__(
+        self, engineered: bool = False, n_regimes: int = 1,
+        windows: tuple[int, ...] = (5, 10, 20), seed: int = 42,
+    ) -> None:
         self.engineered = engineered
         self.n_regimes = n_regimes
         self.windows = windows
         self.seed = seed
 
-    def fit(self, X: pd.DataFrame, y=None):
+    def fit(self, X: pd.DataFrame, y: object = None) -> "EngineFeatures":
         """Learn selected sensors and regime statistics from this training fold."""
         if self.engineered:
             self.sensors_ = select_sensors(X)
@@ -54,7 +57,7 @@ class EngineFeatures(TransformerMixin, BaseEstimator):
             )
         return X.loc[:, self.feature_names_].copy()
 
-    def get_feature_names_out(self, input_features=None) -> np.ndarray:
+    def get_feature_names_out(self, input_features: object = None) -> np.ndarray:
         """Return the predictor names in their model-input order."""
         check_is_fitted(self, "feature_names_")
         return np.asarray(self.feature_names_, dtype=object)
