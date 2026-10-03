@@ -35,12 +35,17 @@ METRIC_LABELS = {"rmse": "RMSE (cycles)", "mae": "MAE (cycles)", "nasa_score": "
 
 
 def plot_pred_vs_true(
-    y_true: ArrayLike, y_pred: ArrayLike, ax: Axes | None = None, title: str | None = None
+    y_true: ArrayLike,
+    y_pred: ArrayLike,
+    ax: Axes | None = None,
+    title: str | None = None,
+    color: str = SERIES[0],
 ) -> Axes:
     """Scatter of predicted against true RUL, one point per engine.
 
     Points on the ``y = x`` line are perfect. Above it the model
     predicts too much life left (late, the costly side); below it, too little.
+    Pass the model's ``SERIES`` colour so it matches the other figures.
     """
     true, pred = _paired(y_true, y_pred)
     ax = _axes(ax)
@@ -51,7 +56,7 @@ def plot_pred_vs_true(
     ax.annotate("perfect prediction", (0.82 * top, 0.82 * top), xytext=(5, -5),
                 textcoords="offset points", rotation=45, rotation_mode="anchor",
                 ha="center", va="top", fontsize=8, color=INK_MUTED)
-    ax.scatter(true, pred, s=36, color=SERIES[0], edgecolors=SURFACE, linewidths=1, zorder=3)
+    ax.scatter(true, pred, s=36, color=color, edgecolors=SURFACE, linewidths=1, zorder=3)
 
     ax.set_xlim(0, top)
     ax.set_ylim(0, top)

@@ -39,6 +39,13 @@ def test_pred_vs_true_draws_one_point_per_engine_and_a_perfect_prediction_line()
     assert "predicted" in ax.get_ylabel().lower()
 
 
+def test_pred_vs_true_can_draw_points_in_another_models_colour():
+    # Lets each model keep its series colour when panels sit side by side.
+    ax = plot_pred_vs_true([10, 50], [15, 40], color=SERIES[1])
+
+    assert tuple(ax.collections[0].get_facecolor()[0]) == to_rgba(SERIES[1])
+
+
 def test_pred_vs_true_rejects_mismatched_lengths():
     with pytest.raises(ValueError, match="3 targets"):
         plot_pred_vs_true([10, 50, 120], [15, 40])
