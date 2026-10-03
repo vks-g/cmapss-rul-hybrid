@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from rul.data.load import DATA_DIR, load_subset
 from rul.evaluation.official import METRICS_DIR, predict_test_cycles, save_results, score_last_cycle
 
 
@@ -75,6 +76,27 @@ def test_each_engine_is_scored_once_at_its_last_cycle():
     assert metrics["mae"] == 12.5
     assert metrics["rmse"] == pytest.approx(14.5774, abs=1e-4)  # sqrt((25 + 400) / 2)
     assert metrics["by_stage"]["early"]["n"] == metrics["by_stage"]["mid"]["n"] == 1  # 112 early, 98 mid
+
+
+class ConstantModel:
+    """Predicts the same RUL for every cycle."""
+
+    def predict(self, frame: pd.DataFrame) -> list[float]:
+        return [100.0] * len(frame)
+
+
+# Expected errors were computed from RUL_FD001.txt with awk, not by rul.
+@pytest.mark.skipif(not DATA_DIR.is_dir(), reason="raw C-MAPSS data not downloaded")
+def test_scoring_on_real_fd001_uses_one_row_per_test_engine():
+    _, test, rul_test = load_subset("FD001")
+
+    last, metrics = score_last_cycle(predict_test_cycles(ConstantModel(), test, rul_test))
+
+    assert last["unit"].tolist() == list(range(1, 101))
+    assert last["rul"].tolist() == rul_test.tolist()
+    assert metrics["n"] == 100
+    assert metrics["rmse"] == pytest.approx(48.230074, abs=1e-6)
+    assert metrics["mae"] == pytest.approx(38.06)
 
 
 def test_results_are_saved_as_json_metrics_and_a_per_engine_csv(tmp_path):
