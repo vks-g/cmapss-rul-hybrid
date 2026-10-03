@@ -8,11 +8,17 @@ the engine is scored once, at that last cycle.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
 from rul.data.labels import add_test_rul, last_cycles
 from rul.evaluation.metrics import evaluate
+
+# src/rul/evaluation/official.py -> repo root is three folders up from this file's folder.
+METRICS_DIR = Path(__file__).resolve().parents[3] / "results" / "metrics"
 
 
 def predict_test_cycles(model, test: pd.DataFrame, rul_test: pd.Series) -> pd.DataFrame:
@@ -44,3 +50,28 @@ def score_last_cycle(cycle_predictions: pd.DataFrame) -> tuple[pd.DataFrame, dic
     """
     last = last_cycles(cycle_predictions)
     return last, evaluate(last["rul"], last["prediction"])
+
+
+def save_results(
+    name: str,
+    metrics: dict,
+    predictions: pd.DataFrame,
+    out_dir: str | Path = METRICS_DIR,
+) -> dict[str, Path]:
+    """Save scores as ``<name>.json`` and per-engine predictions as a CSV.
+
+    Keeping every engine's prediction lets later phases compare models on the
+    same engines (for example with a paired test), not only by their averages.
+
+    Returns:
+        The written paths under ``"metrics"`` and ``"predictions"``.
+    """
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    paths = {
+        "metrics": out_dir / f"{name}.json",
+        "predictions": out_dir / f"{name}_predictions.csv",
+    }
+    paths["metrics"].write_text(json.dumps(metrics, indent=2) + "\n")
+    predictions.to_csv(paths["predictions"], index=False)
+    return paths

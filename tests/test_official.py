@@ -1,9 +1,12 @@
 """Tests for rul.evaluation.official."""
 
+import json
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
-from rul.evaluation.official import predict_test_cycles, score_last_cycle
+from rul.evaluation.official import METRICS_DIR, predict_test_cycles, save_results, score_last_cycle
 
 
 def cycles(spec: dict) -> pd.DataFrame:
@@ -72,3 +75,25 @@ def test_each_engine_is_scored_once_at_its_last_cycle():
     assert metrics["mae"] == 12.5
     assert metrics["rmse"] == pytest.approx(14.5774, abs=1e-4)  # sqrt((25 + 400) / 2)
     assert metrics["by_stage"]["early"]["n"] == metrics["by_stage"]["mid"]["n"] == 1  # 112 early, 98 mid
+
+
+def test_results_are_saved_as_json_metrics_and_a_per_engine_csv(tmp_path):
+    metrics = {"random_forest": {"rmse": 14.5, "by_stage": {"late": {"n": 0, "rmse": None}}}}
+    predictions = pd.DataFrame({"unit": [1, 2], "rul": [112, 98], "random_forest": [117.0, 118.0]})
+
+    paths = save_results("fd001_test", metrics, predictions, out_dir=tmp_path / "metrics")
+
+    assert paths == {
+        "metrics": tmp_path / "metrics" / "fd001_test.json",
+        "predictions": tmp_path / "metrics" / "fd001_test_predictions.csv",
+    }
+    assert json.loads(paths["metrics"].read_text()) == metrics
+    saved = pd.read_csv(paths["predictions"])
+    assert saved.columns.tolist() == ["unit", "rul", "random_forest"]
+    assert saved.values.tolist() == [[1, 112, 117.0], [2, 98, 118.0]]
+
+
+def test_results_default_to_results_metrics_in_the_repo():
+    repo_root = Path(__file__).resolve().parents[1]
+
+    assert METRICS_DIR == repo_root / "results" / "metrics"
