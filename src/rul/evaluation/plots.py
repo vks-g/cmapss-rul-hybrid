@@ -73,10 +73,12 @@ def plot_trajectory(
     y_pred: ArrayLike,
     ax: Axes | None = None,
     title: str | None = None,
+    color: str = SERIES[0],
 ) -> Axes:
     """True and predicted RUL of one engine across its recorded cycles.
 
-    The true curve is the neutral reference; the prediction carries the colour.
+    The true curve is the neutral reference; the prediction carries the
+    colour, which should be the model's ``SERIES`` colour.
     """
     true, pred = _paired(y_true, y_pred)
     cycles = np.asarray(cycle)
@@ -85,7 +87,7 @@ def plot_trajectory(
     ax = _axes(ax)
 
     ax.plot(cycles, true, color=INK_SECONDARY, linewidth=2, label="True RUL", zorder=2)
-    ax.plot(cycles, pred, color=SERIES[0], linewidth=2, label="Predicted RUL", zorder=3)
+    ax.plot(cycles, pred, color=color, linewidth=2, label="Predicted RUL", zorder=3)
 
     ax.set_ylim(bottom=0)
     ax.set_xlabel("Cycle")

@@ -61,6 +61,13 @@ def test_trajectory_draws_true_and_predicted_rul_over_the_engines_cycles():
     assert "cycle" in ax.get_xlabel().lower()
 
 
+def test_trajectory_can_draw_the_prediction_in_another_models_colour():
+    ax = plot_trajectory([1, 2], [114, 113], [100, 105], color=SERIES[2])
+
+    lines = {line.get_label(): line for line in ax.get_lines()}
+    assert to_rgba(lines["Predicted RUL"].get_color()) == to_rgba(SERIES[2])
+
+
 def test_trajectory_rejects_cycles_that_do_not_match_the_targets():
     with pytest.raises(ValueError, match="2 cycles for 3 targets"):
         plot_trajectory([1, 2], [114, 113, 112], [100, 105, 111])
