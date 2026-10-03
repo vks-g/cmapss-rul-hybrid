@@ -1,8 +1,9 @@
 """Tests for rul.evaluation.official."""
 
 import pandas as pd
+import pytest
 
-from rul.evaluation.official import predict_test_cycles
+from rul.evaluation.official import predict_test_cycles, score_last_cycle
 
 
 def cycles(spec: dict) -> pd.DataFrame:
@@ -55,3 +56,19 @@ def test_the_model_sees_each_engines_whole_history_not_just_its_last_cycle():
     predict_test_cycles(model, cycles({1: [1, 2, 3], 2: [1, 2]}), rul_file({1: 112, 2: 98}))
 
     assert model.seen[["unit", "cycle"]].values.tolist() == [[1, 1], [1, 2], [1, 3], [2, 1], [2, 2]]
+
+
+def test_each_engine_is_scored_once_at_its_last_cycle():
+    predictions = pd.DataFrame(
+        [(1, 1, 114, 100), (1, 2, 113, 100), (1, 3, 112, 117), (2, 1, 99, 0), (2, 2, 98, 118)],
+        columns=["unit", "cycle", "rul", "prediction"],
+    )
+
+    last, metrics = score_last_cycle(predictions)
+
+    # Only (112 -> 117) and (98 -> 118) count: errors 5 and 20 cycles.
+    assert last[["unit", "cycle", "rul", "prediction"]].values.tolist() == [[1, 3, 112, 117], [2, 2, 98, 118]]
+    assert metrics["n"] == 2
+    assert metrics["mae"] == 12.5
+    assert metrics["rmse"] == pytest.approx(14.5774, abs=1e-4)  # sqrt((25 + 400) / 2)
+    assert metrics["by_stage"]["early"]["n"] == metrics["by_stage"]["mid"]["n"] == 1  # 112 early, 98 mid

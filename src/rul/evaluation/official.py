@@ -11,7 +11,8 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from rul.data.labels import add_test_rul
+from rul.data.labels import add_test_rul, last_cycles
+from rul.evaluation.metrics import evaluate
 
 
 def predict_test_cycles(model, test: pd.DataFrame, rul_test: pd.Series) -> pd.DataFrame:
@@ -29,3 +30,17 @@ def predict_test_cycles(model, test: pd.DataFrame, rul_test: pd.Series) -> pd.Da
     labelled = add_test_rul(test, rul_test)
     prediction = np.asarray(model.predict(test), dtype=float)
     return labelled.loc[:, ["unit", "cycle", "rul"]].assign(prediction=prediction)
+
+
+def score_last_cycle(cycle_predictions: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
+    """Score each test engine once, at its last recorded cycle.
+
+    Args:
+        cycle_predictions: Output of :func:`predict_test_cycles`.
+
+    Returns:
+        The last-cycle rows (one per engine, sorted by ``unit``) and their
+        :func:`rul.evaluation.metrics.evaluate` scores.
+    """
+    last = last_cycles(cycle_predictions)
+    return last, evaluate(last["rul"], last["prediction"])
