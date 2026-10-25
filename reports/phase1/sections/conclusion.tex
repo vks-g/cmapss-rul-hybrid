@@ -1,0 +1,36 @@
+% Conclusion and Phase 2 outlook (issue #7).
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Phase~1 established a leakage-controlled protocol and feature-based baselines for
+RUL prediction on C-MAPSS FD001. With 155 causal engineered features, the Random
+Forest predicts the RUL of the 100 official test engines with an RMSE of 27.55
+cycles and an MAE of 17.67, the lowest MAE of the six models; all six lie within
+five RMSE cycles of each other. The overall numbers hide the main finding. Near
+failure, where maintenance is decided, the engineered features roughly halve the
+error of both tree models, to 7.52 and 5.62 cycles. Early in life, under the
+uncapped target, they overestimate engines that still look healthy, and a single
+such engine accounts for 92\% of the Random Forest's NASA score. Capping the
+training target at 125 cycles removes much of this error and reverses the
+raw-versus-engineered comparison, so conclusions about feature engineering
+depend on how RUL is defined.
+
+These results have limits. Only FD001, with one operating condition and one fault
+mode, was evaluated, so regime normalization has not yet been tested where it
+matters. Each model was tuned over a small grid with three folds, the XGBoost
+learning rate was not tuned, and cross-validation scores every training cycle
+rather than last cycles like the test set. Differences between models come from
+one test set of 100 engines without confidence intervals, and the capped-target
+result covers only the Random Forest.
+
+Phase~2 keeps the splits, metrics and last-cycle scoring fixed and replaces the
+fixed rolling summaries with sequence models, an LSTM, a temporal CNN and a
+Transformer encoder, trained on sensor windows built inside engine boundaries.
+A hybrid model will fuse a sequence encoder with the engineered-feature branch,
+targeting the gap identified in Section~\ref{sec:introduction}. Ablations will
+cover the capped target with the cap chosen on training data, window length,
+feature groups and regime normalization on FD002 and FD004, and validation will
+add repeated seeds, bootstrap confidence intervals and paired per-engine tests
+using the saved predictions. The bar to beat is the Phase~1 method's test RMSE of
+27.55 cycles (26.15 with raw inputs) and its late-stage RMSE of 6 to 8 cycles.
