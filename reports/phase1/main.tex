@@ -1,0 +1,42 @@
+% Phase 1 report. Each section lives in sections/<name>.tex and is written by its
+% owner (see the section issues); this file only sets up the template and the order.
+% Build from this folder: `tectonic main.tex`, or pdflatex + bibtex (e.g. Overleaf).
+
+\documentclass[conference]{IEEEtran}
+
+\usepackage{iftex}
+\ifXeTeX
+  % Tectonic and xelatex: Times-like text to match pdflatex's IEEEtran output.
+  \usepackage{fontspec}
+  \defaultfontfeatures{Extension=.otf, UprightFont=*-regular, BoldFont=*-bold,
+    ItalicFont=*-italic, BoldItalicFont=*-bolditalic}
+  \setmainfont{texgyretermes}
+  \setsansfont{texgyreheros}
+  \setmonofont{texgyrecursor}
+\fi
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+
+\begin{document}
+
+\title{Remaining Useful Life Prediction for Turbofan Engines\\
+from Engineered Degradation Features:\\
+Phase 1 Machine-Learning Baselines on C-MAPSS}
+
+\author{\IEEEauthorblockN{Gokul VKS, Milind Bansal, Isha Tomar, Yashi Agrawal and Mohammad Affan Anas}
+\IEEEauthorblockA{Newton School of Technology, Rishihood University\\
+Code and results: \url{https://github.com/vks-g/cmapss-rul-hybrid}}}
+
+\maketitle
+
+\input{sections/literature_review}
+\input{sections/dataset_eda}
+\input{sections/feature_engineering}
+\input{sections/models}
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}
