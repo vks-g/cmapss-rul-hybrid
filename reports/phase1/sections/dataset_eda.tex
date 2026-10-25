@@ -117,8 +117,9 @@ model~\cite{Saxena2008damage}. It has two implications. First, the level and
 the recent slope of a sensor both carry information, which motivates the
 rolling mean and slope features. Second, early-life cycles look alike in the
 sensors while their true RUL differs widely, so errors on early cycles are
-expected to be large under the uncapped target; this is why we also report a
-capped target as an ablation and break errors down by degradation stage. The
+expected to be large under the uncapped target; this is why errors are broken
+down by degradation stage and a capped target is checked as an ablation
+(Section~\ref{sec:results}). The
 life fraction uses each training engine's final cycle and is used here only
 for description; it is never a model input. Individual engines are noisier
 than these averages, and they start from different levels because initial
