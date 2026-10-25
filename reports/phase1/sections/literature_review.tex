@@ -29,7 +29,7 @@ The resulting data set~\cite{Saxena2008turbofan} contains four subsets, FD001 to
 that combine one or six operating conditions with one or two fault modes. For test
 engines it gives only a truncated trajectory and the true RUL at its last cycle.
 Saxena et al.~\cite{Saxena2008damage} also defined the asymmetric score used in the
-PHM08 challenge, which penalises late predictions more heavily than early ones because
+PHM08 challenge, which penalizes late predictions more heavily than early ones because
 an unexpected failure costs more than early maintenance; a broader set of prognostic
 metrics is discussed in~\cite{Saxena2008metrics}. Six years later, Ramasso and
 Saxena~\cite{Ramasso2014performance} reviewed more than seventy publications on these
@@ -50,10 +50,10 @@ failure threshold, and Mathew et al.~\cite{Mathew2017prediction} compared a rang
 classical regressors on the NASA turbofan data.
 
 Our Phase~1 baselines follow this direct-regression line with three model families
-chosen for complementary behaviour. Random forests~\cite{Breiman2001random} average
+chosen for complementary behavior. Random forests~\cite{Breiman2001random} average
 many decorrelated regression trees, capturing non-linear sensor interactions with
 little tuning. XGBoost~\cite{Chen2016xgboost} adds trees one at a time, each fitted to
-the gradient of the loss of the current ensemble, with explicit regularisation of tree
+the gradient of the loss of the current ensemble, with explicit regularization of tree
 complexity; it usually trades more tuning for higher accuracy. The elastic
 net~\cite{Zou2005regularization} is a linear model with combined $\ell_1$ and $\ell_2$
 penalties whose grouping effect keeps strongly correlated predictors together, which
