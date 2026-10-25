@@ -47,11 +47,10 @@ network and placed second in the competition. Later work mapped sensor values to
 directly. Khelif et al.~\cite{Khelif2017direct} used support vector regression with
 wrapper-based sensor selection, removing the need to estimate degradation states or a
 failure threshold, and Mathew et al.~\cite{Mathew2017prediction} compared a range of
-classical regressors on the NASA turbofan data. Tree ensembles are also established
-outside turbofans: for tool-wear prediction, Wu et al.~\cite{Wu2017comparative} found a
-random forest more accurate than feed-forward networks and support vector regression.
-On C-MAPSS, Wang et al.~\cite{Wang2023remaining} used random-forest importance to choose
-the inputs of a neural regressor.
+classical regressors on the NASA turbofan data. Random forests have also served both as
+accurate regressors and as feature selectors for a neural
+network~\cite{Wu2017comparative,Wang2023remaining}; Section~\ref{sec:models} discusses
+these studies alongside our models.
 
 Our Phase~1 baselines follow this direct-regression line with three model families
 chosen for complementary behavior. Random forests~\cite{Breiman2001random} average
