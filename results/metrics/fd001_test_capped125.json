@@ -1,0 +1,91 @@
+{
+  "subset": "FD001",
+  "protocol": {
+    "target": "training RUL clipped at 125 cycles (ablation); test scored on uncapped RUL",
+    "train_engines": 100,
+    "test_engines": 100,
+    "scored_at": "last recorded cycle of each test engine, against RUL_FD001.txt",
+    "tuning": "3 engine-grouped CV folds over all training engines (seed 42), scored on the capped target; best candidate refitted on all training engines",
+    "seed": 42
+  },
+  "models": {
+    "engineered": {
+      "random_forest": {
+        "best_params": {
+          "model__min_samples_leaf": 1,
+          "model__n_estimators": 100
+        },
+        "cv_rmse": 14.13437765537303,
+        "test": {
+          "n": 100,
+          "rmse": 16.206041064985612,
+          "mae": 11.946899999999998,
+          "nasa_score": 411.67183065614705,
+          "stage_bins": [
+            50.0,
+            100.0
+          ],
+          "by_stage": {
+            "early": {
+              "n": 33,
+              "rmse": 20.050294640017515,
+              "mae": 16.689090909090908,
+              "nasa_score": 160.0350921675779
+            },
+            "mid": {
+              "n": 34,
+              "rmse": 18.14476597680282,
+              "mae": 14.130882352941176,
+              "nasa_score": 215.6406165783628
+            },
+            "late": {
+              "n": 33,
+              "rmse": 7.392047733677705,
+              "mae": 4.954545454545454,
+              "nasa_score": 35.99612191020634
+            }
+          }
+        }
+      }
+    },
+    "raw": {
+      "random_forest": {
+        "best_params": {
+          "model__min_samples_leaf": 3,
+          "model__n_estimators": 100
+        },
+        "cv_rmse": 16.919035631606828,
+        "test": {
+          "n": 100,
+          "rmse": 18.66026556994501,
+          "mae": 14.01736488927739,
+          "nasa_score": 559.6863519924111,
+          "stage_bins": [
+            50.0,
+            100.0
+          ],
+          "by_stage": {
+            "early": {
+              "n": 33,
+              "rmse": 23.116398007765774,
+              "mae": 18.247878089923535,
+              "nasa_score": 225.34601670836804
+            },
+            "mid": {
+              "n": 34,
+              "rmse": 18.16931987853348,
+              "mae": 15.262921296840418,
+              "nasa_score": 191.57179235952992
+            },
+            "late": {
+              "n": 33,
+              "rmse": 13.44144377287179,
+              "mae": 8.503551147505693,
+              "nasa_score": 142.76854292451316
+            }
+          }
+        }
+      }
+    }
+  }
+}
