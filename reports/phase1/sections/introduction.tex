@@ -1,0 +1,49 @@
+% Introduction (issue #7).
+
+\section{Introduction}
+\label{sec:introduction}
+
+An aircraft engine that fails in service grounds the aircraft and can endanger it,
+while an engine that is overhauled too early wastes useful life. Predictive
+maintenance resolves this trade-off by estimating, from the engine's own sensor
+history, its remaining useful life (RUL): the number of operating cycles left
+before failure~\cite{Jardine2006review,Lei2018machinery}. Because run-to-failure
+records of real engines are rare, most data-driven work uses NASA's C-MAPSS
+simulation data~\cite{Saxena2008damage,Saxena2008turbofan}, in which every
+training engine is observed until it fails and every test engine stops at an
+unknown point before failure.
+
+This project asks whether hand-engineered degradation features are enough for RUL
+prediction, or whether models that learn directly from raw sensor sequences do
+better. Fixed rolling summaries of recent history may miss long degradation
+trajectories and interactions whose timing differs from engine to engine, which
+sequence models are designed to capture~\cite{Zheng2017long}. Answering the
+question fairly needs a strong feature-based baseline and an evaluation protocol
+that both model families share. Published C-MAPSS results are hard to compare
+because they differ in subsets, targets and protocols~\cite{Ramasso2014performance}.
+
+Phase~1, reported here, builds that baseline on FD001, the subset with one
+operating condition and one fault mode. Its contributions are:
+\begin{itemize}
+\item a leakage-controlled protocol, fixed for Phase~2: engine-grouped
+  cross-validation, preprocessing refitted inside every training fold, an
+  uncapped RUL target, and scoring of each official test engine once at its last
+  cycle with RMSE, MAE and the asymmetric NASA score, overall and by degradation
+  stage;
+\item a causal feature set of 155 predictors per cycle (regime-normalized sensor
+  readings with rolling means, slopes and changes from each engine's first
+  cycle), compared with 25 raw inputs;
+\item Random Forest, XGBoost and Elastic Net models tuned under this protocol and
+  scored on the 100 official FD001 test engines;
+\item an error analysis showing that the engineered features roughly halve the
+  tree models' error near failure but overestimate young engines, that the NASA
+  score is dominated by single engines, and that capping the target reverses the
+  raw-versus-engineered comparison.
+\end{itemize}
+
+Section~\ref{sec:literature_review} reviews related work and
+Section~\ref{sec:dataset_eda} the data. Section~\ref{sec:methodology} defines the
+problem and the protocol, Sections~\ref{sec:feature_engineering}
+and~\ref{sec:models} describe the features and models, and
+Section~\ref{sec:results} reports the results. Section~\ref{sec:conclusion}
+concludes and outlines Phase~2.
