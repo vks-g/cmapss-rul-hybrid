@@ -1,0 +1,46 @@
+subset: FD001
+seed: 42
+n_splits: 3
+validation_size: 0.2
+feature_columns:
+- cycle
+- op_1
+- op_2
+- op_3
+- s_1
+- s_2
+- s_3
+- s_4
+- s_5
+- s_6
+- s_7
+- s_8
+- s_9
+- s_10
+- s_11
+- s_12
+- s_13
+- s_14
+- s_15
+- s_16
+- s_17
+- s_18
+- s_19
+- s_20
+- s_21
+models:
+  random_forest:
+    best_params:
+      min_samples_leaf: 3
+      n_estimators: 200
+    cv_rmse: 39.34506417339541
+  xgboost:
+    best_params:
+      max_depth: 3
+      n_estimators: 100
+    cv_rmse: 39.89175669352213
+  elastic_net:
+    best_params:
+      model__alpha: 0.1
+      model__l1_ratio: 0.8
+    cv_rmse: 42.650644034932185

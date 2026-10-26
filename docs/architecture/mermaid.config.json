@@ -1,0 +1,47 @@
+{
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "Helvetica, Arial, sans-serif",
+    "fontSize": "15px",
+    "primaryColor": "#ffffff",
+    "primaryBorderColor": "#52514e",
+    "primaryTextColor": "#0b0b0b",
+    "secondaryColor": "#f4f4f2",
+    "tertiaryColor": "#fafaf8",
+    "lineColor": "#52514e",
+    "textColor": "#0b0b0b",
+    "clusterBkg": "#fafaf8",
+    "clusterBorder": "#c3c2b7",
+    "titleColor": "#0b0b0b",
+    "edgeLabelBackground": "#ffffff",
+    "git0": "#2a78d6",
+    "git1": "#1baf7a",
+    "git2": "#eb6834",
+    "git3": "#eda100",
+    "gitBranchLabel0": "#ffffff",
+    "gitBranchLabel1": "#ffffff",
+    "gitBranchLabel2": "#ffffff",
+    "gitBranchLabel3": "#0b0b0b",
+    "tagLabelColor": "#0b0b0b",
+    "tagLabelBackground": "#fdf5e1",
+    "tagLabelBorder": "#eda100",
+    "commitLabelColor": "#0b0b0b",
+    "commitLabelBackground": "#ffffff"
+  },
+  "htmlLabels": false,
+  "flowchart": {
+    "htmlLabels": false,
+    "curve": "basis",
+    "padding": 14,
+    "wrappingWidth": 320,
+    "nodeSpacing": 36,
+    "rankSpacing": 46,
+    "useMaxWidth": false
+  },
+  "gitGraph": {
+    "mainBranchName": "main",
+    "showCommitLabel": true,
+    "rotateCommitLabel": false,
+    "useMaxWidth": false
+  }
+}

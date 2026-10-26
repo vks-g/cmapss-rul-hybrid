@@ -1,0 +1,26 @@
+%% Phase 2 sequence models (planned). Details such as window length are tuned in Phase 2.
+flowchart TB
+    NORM["Regime-normalized sensors<br/>fitted on training engines"]:::fit
+    WIN["Fixed-length windows<br/>inside one engine<br/>label = RUL at last cycle"]:::planned
+
+    subgraph NET["One network per encoder, trained by the shared trainer (seeding · early stopping · checkpoints)"]
+        LSTM["LSTM"]:::planned
+        TCN["Temporal CNN"]:::planned
+        TRF["Transformer encoder"]:::planned
+        HEAD["Regression head"]:::planned
+        LSTM --> HEAD
+        TCN --> HEAD
+        TRF --> HEAD
+    end
+
+    EVAL["Same folds and metrics<br/>as Phase 1; each test<br/>engine scored once,<br/>on its last window"]:::output
+
+    NORM --> WIN
+    WIN --> LSTM
+    WIN --> TCN
+    WIN --> TRF
+    HEAD -- RUL --> EVAL
+
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
