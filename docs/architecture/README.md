@@ -14,13 +14,13 @@ Diagrams of how the project is built: the data flow, the `rul` package, the eval
 | 8 | [Hybrid model](#8-hybrid-model-planned) | Phase 2 fusion of sequence and engineered features (planned) |
 | 9 | [Git workflow](#9-git-workflow) | Branches, reviewed pull requests and milestone tags |
 
-**Colour key.** Blue: data. Orange: fitted on training engines only, which is where leakage could enter. Green: models. Amber: outputs. Grey with a dashed border: planned for Phase 2 and not built yet. In the package diagram, colour marks the subpackage instead.
+**Color key.** Blue: data. Orange: fitted on training engines only, which is where leakage could enter. Green: models. Amber: outputs. Gray with a dashed border: planned for Phase 2 and not built yet. In the package diagram, color marks the subpackage instead.
 
 ## 1. System overview
 
 ![System overview](svg/01-system-overview.svg)
 
-Raw C-MAPSS files are loaded and labelled, split by engine, and preprocessed with statistics fitted on the training engines only. Phase 1 models use rolling features. Phase 2 models will use sensor windows, and the hybrid will use both. Every model goes through the same last-cycle test scoring and metrics.
+Raw C-MAPSS files are loaded and labeled, split by engine, and preprocessed with statistics fitted on the training engines only. Phase 1 models use rolling features. Phase 2 models will use sensor windows, and the hybrid will use both. Every model goes through the same last-cycle test scoring and metrics.
 
 ## 2. Package modules
 

@@ -31,10 +31,10 @@ Fixed rolling-window features may miss long degradation trajectories and interac
 ## Approach
 
 <p align="center">
-  <a href="docs/architecture/README.md#1-system-overview"><img src="docs/architecture/svg/01-system-overview.svg" alt="Pipeline: NASA C-MAPSS files are loaded, labelled and split by engine; preprocessing is fitted on training engines; rolling features feed the Phase 1 models, planned sensor windows feed the Phase 2 and hybrid models; all models go through the same last-cycle test scoring"></a>
+  <a href="docs/architecture/README.md#1-system-overview"><img src="docs/architecture/svg/01-system-overview.svg" alt="Pipeline: NASA C-MAPSS files are loaded, labeled and split by engine; preprocessing is fitted on training engines; rolling features feed the Phase 1 models, planned sensor windows feed the Phase 2 and hybrid models; all models go through the same last-cycle test scoring"></a>
 </p>
 
-<sub>Solid boxes are built; grey dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. All nine diagrams, including the package structure and the planned hybrid model, are in [`docs/architecture/`](docs/architecture/README.md).</sub>
+<sub>Solid boxes are built; gray dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. All nine diagrams, including the package structure and the planned hybrid model, are in [`docs/architecture/`](docs/architecture/README.md).</sub>
 
 | Phase | Method | Models | Status |
 |---|---|---|---|
