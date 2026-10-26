@@ -234,15 +234,19 @@ Each step's inputs and outputs are drawn in the [artifact flow diagram](docs/arc
 
 ## Team
 
-| Member | GitHub |
-|---|---|
-| M1 (team lead) | [@vks-g](https://github.com/vks-g) |
-| M2 | – |
-| M3 | – |
-| M4 | – |
-| M5 | – |
+| | Member | GitHub ID |
+|:---:|---|---|
+| <img src="https://github.com/vks-g.png?size=80" width="40" height="40" alt=""> | **Gokul VKS** (team lead) | [@vks-g](https://github.com/vks-g) |
+| <img src="https://github.com/MilindDevX.png?size=80" width="40" height="40" alt=""> | **Milind Bansal** | [@MilindDevX](https://github.com/MilindDevX) |
+| <img src="https://github.com/Bytebard089.png?size=80" width="40" height="40" alt=""> | **Isha Tomar** | [@Bytebard089](https://github.com/Bytebard089) |
+| <img src="https://github.com/11yashiagrawal.png?size=80" width="40" height="40" alt=""> | **Yashi Agrawal** | [@11yashiagrawal](https://github.com/11yashiagrawal) |
+| <img src="https://github.com/affan80.png?size=80" width="40" height="40" alt=""> | **Mohammad Affan Anas** | [@affan80](https://github.com/affan80) |
 
-Git workflow is in [`CONTRIBUTING.md`](CONTRIBUTING.md).
+Who built what in Phase 1 is listed in the report's Author Contributions section and is visible in each file's commit history.
+
+## Contributing
+
+Branches, commit messages and review rules are in [`CONTRIBUTING.md`](CONTRIBUTING.md). The branching model is drawn in [`docs/architecture/`](docs/architecture/README.md#9-git-workflow).
 
 ## References
 
