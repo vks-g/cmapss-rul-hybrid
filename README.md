@@ -31,7 +31,7 @@ Fixed rolling-window features may miss long degradation trajectories and interac
 ## Approach
 
 <p align="center">
-  <a href="docs/architecture/README.md#1-system-overview"><img src="docs/architecture/svg/01-system-overview.svg" width="640" alt="Pipeline: NASA C-MAPSS files are loaded, labelled and split by engine; preprocessing is fitted on training engines; rolling features feed the Phase 1 models, planned sensor windows feed the Phase 2 and hybrid models; all models go through the same last-cycle test scoring"></a>
+  <a href="docs/architecture/README.md#1-system-overview"><img src="docs/architecture/svg/01-system-overview.svg" alt="Pipeline: NASA C-MAPSS files are loaded, labelled and split by engine; preprocessing is fitted on training engines; rolling features feed the Phase 1 models, planned sensor windows feed the Phase 2 and hybrid models; all models go through the same last-cycle test scoring"></a>
 </p>
 
 <sub>Solid boxes are built; grey dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. All nine diagrams, including the package structure and the planned hybrid model, are in [`docs/architecture/`](docs/architecture/README.md).</sub>
@@ -47,7 +47,7 @@ Fixed rolling-window features may miss long degradation trajectories and interac
 **Fair comparison.** All models share the same engine-level splits (by `unit` id, never by row) and the same metrics: RMSE and MAE on RUL, NASA score, and error by degradation stage (early / mid / late).
 
 <p align="center">
-  <a href="docs/architecture/README.md#3-evaluation-protocol"><img src="docs/architecture/svg/03-evaluation-protocol.svg" width="760" alt="Evaluation protocol: model selection with engine-grouped cross-validation on the training engines, then a single refit and one official last-cycle score per test engine"></a>
+  <a href="docs/architecture/README.md#3-evaluation-protocol"><img src="docs/architecture/svg/03-evaluation-protocol.svg" alt="Evaluation protocol: model selection with engine-grouped cross-validation on the training engines, then a single refit and one official last-cycle score per test engine"></a>
 </p>
 
 The test engines are used once, after model selection.

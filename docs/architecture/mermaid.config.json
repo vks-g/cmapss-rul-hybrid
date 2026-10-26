@@ -35,11 +35,13 @@
     "padding": 14,
     "wrappingWidth": 320,
     "nodeSpacing": 36,
-    "rankSpacing": 46
+    "rankSpacing": 46,
+    "useMaxWidth": false
   },
   "gitGraph": {
     "mainBranchName": "main",
     "showCommitLabel": true,
-    "rotateCommitLabel": false
+    "rotateCommitLabel": false,
+    "useMaxWidth": false
   }
 }
