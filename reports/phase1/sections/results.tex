@@ -75,8 +75,10 @@ lived 128 to 362 cycles, yet no test engine had more than 145 cycles left at its
 last observed cycle. The engineered Random Forest overestimates 9 engines by more
 than 50 cycles. Tree SHAP attributes far more of each engineered prediction to
 \texttt{cycle} than to any sensor feature (Section~\ref{sec:models}), so for
-young engines the models fall back on an age-based estimate: this is the
-irreducible early-life noise of the uncapped target.
+young engines the models fall back on an age-based estimate and overestimate
+their remaining life. Capping the training target roughly halves this error: the
+engineered Random Forest's early-stage RMSE falls from 39.49 to 20.05 cycles,
+still scored against the uncapped test RUL (Section~\ref{sec:capped}).
 
 \begin{figure*}[!t]
 \centering
@@ -122,6 +124,7 @@ young engines, which is why we read it together with RMSE, MAE and the stage
 errors.
 
 \subsection{Capped-Target Check}
+\label{sec:capped}
 To test whether the uncapped target explains the early-stage errors, Random
 Forest was retrained with the training RUL capped at 125 cycles, using the same
 grid, folds and seed, and scored against the true, uncapped test RUL
