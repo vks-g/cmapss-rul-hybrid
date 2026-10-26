@@ -30,33 +30,11 @@ Fixed rolling-window features may miss long degradation trajectories and interac
 
 ## Approach
 
-```mermaid
-flowchart LR
-    RAW[("NASA C-MAPSS<br/>FD001–FD004")]:::data
-    DATA["Load and label<br/>RUL = last cycle − cycle"]
-    SPLIT["Split by engine<br/>GroupKFold"]
-    PRE["Fit on training engines<br/>sensor selection<br/>regime normalization"]:::fit
-    ROL["Rolling features<br/>mean · slope · health"]
-    WIN["Sensor windows"]:::planned
-    ML["Phase 1 · ML<br/>Random Forest<br/>XGBoost · Elastic Net"]:::model
-    HY["Hybrid<br/>fusion model"]:::planned
-    DL["Phase 2 · DL<br/>LSTM · TCN<br/>Transformer"]:::planned
-    EVAL["Last-cycle test scoring<br/>RMSE · MAE · NASA<br/>early / mid / late"]:::output
+<p align="center">
+  <a href="docs/architecture/README.md#1-system-overview"><img src="docs/architecture/svg/01-system-overview.svg" width="640" alt="Pipeline: NASA C-MAPSS files are loaded, labelled and split by engine; preprocessing is fitted on training engines; rolling features feed the Phase 1 models, planned sensor windows feed the Phase 2 and hybrid models; all models go through the same last-cycle test scoring"></a>
+</p>
 
-    RAW --> DATA --> SPLIT --> PRE
-    PRE --> ROL --> ML --> EVAL
-    PRE -.-> WIN -.-> DL -.-> EVAL
-    ROL -.-> HY
-    WIN -.-> HY -.-> EVAL
-
-    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
-    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
-    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
-    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
-    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
-```
-
-<sub>Solid boxes are built. Grey dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. More diagrams are in [`docs/architecture/`](docs/architecture/README.md).</sub>
+<sub>Solid boxes are built; grey dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. All nine diagrams, including the package structure and the planned hybrid model, are in [`docs/architecture/`](docs/architecture/README.md).</sub>
 
 | Phase | Method | Models | Status |
 |---|---|---|---|
@@ -68,28 +46,11 @@ flowchart LR
 
 **Fair comparison.** All models share the same engine-level splits (by `unit` id, never by row) and the same metrics: RMSE and MAE on RUL, NASA score, and error by degradation stage (early / mid / late).
 
-```mermaid
-flowchart LR
-    TR[("Training<br/>engines")]:::data
-    CV["GroupKFold by engine<br/>3 folds · seed 42"]
-    FIT["Fit preprocessing<br/>and model on each<br/>training fold"]:::fit
-    BEST["Pick the candidate<br/>with the lowest<br/>mean CV RMSE"]
-    REFIT["Refit on all<br/>training engines"]:::fit
-    TE[("Test engines<br/>+ RUL_FDxxx.txt")]:::data
-    SCORE["Score each test engine<br/>once, at its last cycle"]
-    MET["RMSE · MAE · NASA<br/>early / mid / late"]:::output
+<p align="center">
+  <a href="docs/architecture/README.md#3-evaluation-protocol"><img src="docs/architecture/svg/03-evaluation-protocol.svg" width="760" alt="Evaluation protocol: model selection with engine-grouped cross-validation on the training engines, then a single refit and one official last-cycle score per test engine"></a>
+</p>
 
-    TR --> CV --> FIT --> BEST --> REFIT --> SCORE --> MET
-    TE --> SCORE
-
-    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
-    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
-    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
-    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
-    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
-```
-
-The test engines are used once, after model selection. Diagram 3 in [`docs/architecture/`](docs/architecture/README.md#3-evaluation-protocol) has the full protocol.
+The test engines are used once, after model selection.
 
 ### Fold-safe preprocessing
 
