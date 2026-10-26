@@ -1,5 +1,5 @@
 %% End-to-end system: from the NASA files to the scored results.
-flowchart LR
+flowchart TB
     RAW[("NASA C-MAPSS<br/>FD001–FD004")]:::data
     DATA["rul.data<br/>load · labels · split<br/>RUL = last cycle − cycle<br/>engine-grouped folds"]
     PRE["rul.features<br/>cleaning · regimes<br/>fitted on training<br/>engines only"]:::fit

@@ -1,6 +1,6 @@
 %% Hybrid fusion model (planned): a sequence branch and an engineered-feature branch
 %% share one regression head.
-flowchart LR
+flowchart TB
     subgraph INPUT["Inputs at cycle t of one engine"]
         WIN["Sensor window<br/>cycles t − w + 1 … t"]:::data
         FEAT["Engineered features at t<br/>Phase 1 pipeline"]:::data

@@ -1,6 +1,6 @@
 %% Phase 1 model architecture: one scikit-learn Pipeline per model and feature set,
 %% tuned with GridSearchCV over the engine-grouped folds (COMPARISON_GRIDS).
-flowchart LR
+flowchart TB
     X[("Training cycles<br/>raw frame with unit")]:::data
 
     subgraph SEARCH["GridSearchCV · 3 engine-grouped folds · scored by RMSE"]
