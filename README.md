@@ -1,6 +1,23 @@
+<div align="center">
+
 # cmapss-rul-hybrid
 
-Remaining Useful Life (RUL) prediction for turbofan engines on the NASA C-MAPSS dataset. We compare regression on engineered degradation features (ML, Phase 1) against sequence models that learn directly from raw sensor windows (DL, Phase 2). A hybrid model then fuses the two.
+**Remaining Useful Life prediction for turbofan engines on NASA C-MAPSS**
+
+Engineered-feature machine learning (Phase 1) compared with sequence deep learning (Phase 2), plus a hybrid of the two.
+
+[![Phase 1: complete](https://img.shields.io/badge/Phase_1-ML_baselines_complete-1baf7a)](#results)
+[![Phase 2: planned](https://img.shields.io/badge/Phase_2-sequence_models_planned-898781)](#approach)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-2a78d6?logo=python&logoColor=white)](pyproject.toml)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-%E2%89%A51.6-eb6834?logo=scikitlearn&logoColor=white)](requirements.txt)
+[![XGBoost](https://img.shields.io/badge/XGBoost-%E2%89%A52.0-2a78d6)](requirements.txt)
+[![Tests: pytest](https://img.shields.io/badge/tests-pytest-0a9edc?logo=pytest&logoColor=white)](tests/)
+[![Dataset: NASA C-MAPSS](https://img.shields.io/badge/dataset-NASA_C--MAPSS-0b3d91)](data/README.md)
+[![Report: IEEE PDF](https://img.shields.io/badge/report-IEEE_PDF-eda100?logo=latex&logoColor=white)](reports/phase1/main.pdf)
+
+[Phase 1 report](reports/phase1/main.pdf) · [Slides](presentations/phase1.pdf) · [Architecture diagrams](docs/architecture/README.md) · [Contributing](CONTRIBUTING.md)
+
+</div>
 
 ## Problem
 
@@ -8,15 +25,73 @@ Each engine in C-MAPSS is a multivariate time series of 3 operating settings and
 
 Fixed rolling-window features may miss long degradation trajectories and interactions whose timing differs across engines. This project tests whether sequence models close that gap. The full brief is in [`docs/project_brief.md`](docs/project_brief.md).
 
+> [!NOTE]
+> **Phase 1 result.** On the 100 official FD001 test engines, all six Phase 1 models (three regressors, each on engineered and on raw features) are within five RMSE cycles of each other (26.15 to 31.08). Near failure (true RUL ≤ 50), engineered features roughly halve the tree models' error: RMSE 7.52 and 5.62, against 13.50 and 14.32 with raw sensors. They overestimate young engines, though. Details are under [Results](#results) and in the [Phase 1 report](reports/phase1/main.pdf).
+
 ## Approach
 
-| Phase | Method | Models |
-|---|---|---|
-| 1: ML | Engineered features: cycle, rolling mean/slope, operating regime, sensor health | Random Forest, XGBoost, Elastic Net |
-| 2: DL | Fixed-length sensor windows | LSTM, Temporal CNN, Transformer encoder |
-| 2: Hybrid | Sequence encoder + engineered-feature branch, fused into one regression head | Fusion model |
+```mermaid
+flowchart LR
+    RAW[("NASA C-MAPSS<br/>FD001–FD004")]:::data
+    DATA["Load and label<br/>RUL = last cycle − cycle"]
+    SPLIT["Split by engine<br/>GroupKFold"]
+    PRE["Fit on training engines<br/>sensor selection<br/>regime normalization"]:::fit
+    ROL["Rolling features<br/>mean · slope · health"]
+    WIN["Sensor windows"]:::planned
+    ML["Phase 1 · ML<br/>Random Forest<br/>XGBoost · Elastic Net"]:::model
+    HY["Hybrid<br/>fusion model"]:::planned
+    DL["Phase 2 · DL<br/>LSTM · TCN<br/>Transformer"]:::planned
+    EVAL["Last-cycle test scoring<br/>RMSE · MAE · NASA<br/>early / mid / late"]:::output
+
+    RAW --> DATA --> SPLIT --> PRE
+    PRE --> ROL --> ML --> EVAL
+    PRE -.-> WIN -.-> DL -.-> EVAL
+    ROL -.-> HY
+    WIN -.-> HY -.-> EVAL
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
+```
+
+<sub>Solid boxes are built. Grey dashed boxes are planned for Phase 2. Orange marks steps fitted on training engines only. More diagrams are in [`docs/architecture/`](docs/architecture/README.md).</sub>
+
+| Phase | Method | Models | Status |
+|---|---|---|---|
+| 1: ML | Engineered features: cycle, rolling mean/slope, operating regime, sensor health | Random Forest, XGBoost, Elastic Net | Complete |
+| 2: DL | Fixed-length sensor windows | LSTM, Temporal CNN, Transformer encoder | Planned |
+| 2: Hybrid | Sequence encoder + engineered-feature branch, fused into one regression head | Fusion model | Planned |
+
+### Evaluation protocol
 
 **Fair comparison.** All models share the same engine-level splits (by `unit` id, never by row) and the same metrics: RMSE and MAE on RUL, NASA score, and error by degradation stage (early / mid / late).
+
+```mermaid
+flowchart LR
+    TR[("Training<br/>engines")]:::data
+    CV["GroupKFold by engine<br/>3 folds · seed 42"]
+    FIT["Fit preprocessing<br/>and model on each<br/>training fold"]:::fit
+    BEST["Pick the candidate<br/>with the lowest<br/>mean CV RMSE"]
+    REFIT["Refit on all<br/>training engines"]:::fit
+    TE[("Test engines<br/>+ RUL_FDxxx.txt")]:::data
+    SCORE["Score each test engine<br/>once, at its last cycle"]
+    MET["RMSE · MAE · NASA<br/>early / mid / late"]:::output
+
+    TR --> CV --> FIT --> BEST --> REFIT --> SCORE --> MET
+    TE --> SCORE
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
+```
+
+The test engines are used once, after model selection. Diagram 3 in [`docs/architecture/`](docs/architecture/README.md#3-evaluation-protocol) has the full protocol.
+
+### Fold-safe preprocessing
 
 Operating-regime normalization uses `rul.features.regimes.RegimeNormalizer`. Fit it on each training fold, then reuse that fitted object for validation and test data:
 
@@ -48,29 +123,35 @@ The default rule drops exactly constant training sensors; an optional `min_relat
 
 NASA C-MAPSS Turbofan Engine Degradation Simulation (Saxena et al., 2008). FD001 is the primary subset; FD002–FD004 are extensions.
 
+| Subset | Train engines | Test engines | Operating conditions | Fault modes |
+|---|---:|---:|---:|---|
+| **FD001** (primary) | 100 | 100 | 1 | HPC degradation |
+| FD002 | 260 | 259 | 6 | HPC degradation |
+| FD003 | 100 | 100 | 1 | HPC and fan degradation |
+| FD004 | 249 | 248 | 6 | HPC and fan degradation |
+
 The raw data is not committed. Download instructions are under Setup.
 
-## Repository structure
+## Results
 
-```
-├── configs/          experiment configs (YAML)
-├── data/             raw + processed data (gitignored)
-├── docs/             project brief, literature notes
-├── notebooks/
-│   ├── phase1/       EDA, feature engineering, ML models, ML results
-│   └── phase2/       LSTM, TCN, Transformer, ablations, validation, hybrid, final comparison
-├── presentations/    phase slide decks
-├── reports/          IEEE LaTeX reports (one section file per owner)
-├── results/          figures, metrics (committed); model checkpoints (gitignored)
-├── scripts/          data download, training, ablation runners
-├── src/rul/          shared Python package
-│   ├── data/         loading, RUL labels, engine-level splits
-│   ├── features/     cleaning, regimes, rolling features, windows
-│   ├── models/       ML baselines, sequence models, hybrid
-│   ├── training/     shared PyTorch training loop
-│   └── evaluation/   metrics and plots
-└── tests/            unit tests (labels, splits, windows)
-```
+FD001 official test set: 100 engines, each scored once at its last recorded cycle against `RUL_FD001.txt`, with the uncapped RUL target. Lower is better. Phase 2 rows are filled in as experiments complete.
+
+| Model | RMSE | MAE | NASA score |
+|---|---|---|---|
+| Random Forest | 27.55 | 17.67 | 145,410 |
+| XGBoost | 30.50 | 19.82 | 61,202 |
+| Elastic Net | 28.39 | 23.57 | 7,777 |
+| LSTM | – | – | – |
+| Temporal CNN | – | – | – |
+| Transformer | – | – | – |
+| Hybrid | – | – | – |
+
+Phase 1 rows use the engineered features, with hyperparameters chosen by engine-grouped cross-validation on the training engines only. The NASA score adds one exponential penalty per engine, so a single badly late prediction can dominate it: one test engine accounts for 92% of Random Forest's score. With raw sensor inputs instead, RMSE is 26.15 (Random Forest), 26.84 (XGBoost) and 31.08 (Elastic Net). Stage-wise errors, figures and per-engine predictions are in [`04_ml_results.ipynb`](notebooks/phase1/04_ml_results.ipynb) and [`results/metrics/`](results/metrics/). The full write-up is the [Phase 1 report](reports/phase1/main.pdf), and the slides are in [`presentations/phase1.pdf`](presentations/phase1.pdf).
+
+<p align="center">
+  <img src="results/figures/fd001_test_stage_rmse.png" width="560" alt="Bar chart of FD001 test RMSE by degradation stage for the engineered-feature Random Forest, XGBoost and Elastic Net">
+</p>
+<p align="center"><sub>FD001 test RMSE by degradation stage, engineered features. The tree models are most accurate near failure and least accurate on young engines.</sub></p>
 
 ## Setup & reproduce
 
@@ -122,21 +203,34 @@ Cells** in each Phase 1 notebook, in this order:
 
 Runtimes depend on your hardware.
 
-## Results
+Each step's inputs and outputs are drawn in the [artifact flow diagram](docs/architecture/README.md#6-artifact-flow).
 
-FD001 official test set: 100 engines, each scored once at its last recorded cycle against `RUL_FD001.txt`, with the uncapped RUL target. Lower is better. Phase 2 rows are filled in as experiments complete.
+## Repository structure
 
-| Model | RMSE | MAE | NASA score |
-|---|---|---|---|
-| Random Forest | 27.55 | 17.67 | 145,410 |
-| XGBoost | 30.50 | 19.82 | 61,202 |
-| Elastic Net | 28.39 | 23.57 | 7,777 |
-| LSTM | – | – | – |
-| Temporal CNN | – | – | – |
-| Transformer | – | – | – |
-| Hybrid | – | – | – |
-
-Phase 1 rows use the engineered features, with hyperparameters chosen by engine-grouped cross-validation on the training engines only. The NASA score adds one exponential penalty per engine, so a single badly late prediction can dominate it: one test engine accounts for 92% of Random Forest's score. With raw sensor inputs instead, RMSE is 26.15 (Random Forest), 26.84 (XGBoost) and 31.08 (Elastic Net). Stage-wise errors, figures and per-engine predictions are in [`04_ml_results.ipynb`](notebooks/phase1/04_ml_results.ipynb) and [`results/metrics/`](results/metrics/). The full write-up is the [Phase 1 report](reports/phase1/main.pdf), and the slides are in [`presentations/phase1.pdf`](presentations/phase1.pdf).
+```
+├── configs/              tuned baseline parameters (ml_baseline.yaml)
+├── data/                 README.md only; raw/ and processed/ are gitignored
+├── docs/
+│   ├── architecture/     system, package, protocol and model diagrams
+│   ├── project_brief.md  the project brief
+│   └── *.md              notes on rolling features and the ML runs
+├── notebooks/
+│   ├── phase1/           01 EDA → 02 features → 03 ML models → 04 official results
+│   └── phase2/           sequence models, ablations, hybrid (planned)
+├── presentations/        phase slide decks
+├── reports/phase1/       IEEE LaTeX report: main.tex, sections/, refs.bib, main.pdf
+├── results/
+│   ├── figures/          EDA and test-set figures
+│   └── metrics/          test metrics (JSON) and per-engine predictions (CSV)
+├── scripts/              data download, capped-target ablation
+├── src/rul/              shared Python package
+│   ├── data/             loading, RUL labels, engine-level splits
+│   ├── features/         sensor selection, regimes, rolling features, feature matrices
+│   ├── models/           ML baselines, fold-fitted comparison pipelines
+│   ├── training/         shared PyTorch training loop (Phase 2)
+│   └── evaluation/       metrics, official test scoring, plots
+└── tests/                pytest suite for the package and scripts
+```
 
 ## Team
 
