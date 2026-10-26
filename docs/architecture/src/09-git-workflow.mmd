@@ -1,0 +1,19 @@
+%% Branching model from CONTRIBUTING.md: topic branches -> dev (reviewed PRs) -> main (tagged milestones).
+gitGraph
+    commit id: "scaffold"
+    branch dev
+    checkout dev
+    commit id: "integration"
+    branch feat/handle/topic
+    checkout feat/handle/topic
+    commit id: "feat: ..."
+    commit id: "test: ..."
+    checkout dev
+    merge feat/handle/topic id: "PR, 1 approval"
+    branch docs/handle/topic
+    checkout docs/handle/topic
+    commit id: "docs: ..."
+    checkout dev
+    merge docs/handle/topic id: "PR, merge commit"
+    checkout main
+    merge dev id: "phase end" tag: "v1.0-phase1"

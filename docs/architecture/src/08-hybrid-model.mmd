@@ -1,0 +1,21 @@
+%% Hybrid fusion model (planned): a sequence branch and an engineered-feature branch
+%% share one regression head.
+flowchart LR
+    subgraph INPUT["Inputs at cycle t of one engine"]
+        WIN["Sensor window<br/>cycles t − w + 1 … t"]:::data
+        FEAT["Engineered features at t<br/>Phase 1 pipeline"]:::data
+    end
+
+    ENC["Sequence encoder<br/>LSTM / TCN / Transformer"]:::planned
+    MLP["MLP branch"]:::planned
+    CAT["Concatenate<br/>the two embeddings"]:::planned
+    HEAD["Fusion regression head"]:::planned
+    Y(["Predicted RUL at t"]):::output
+
+    WIN --> ENC --> CAT
+    FEAT --> MLP --> CAT
+    CAT --> HEAD --> Y
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
