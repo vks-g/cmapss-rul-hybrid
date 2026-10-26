@@ -1,0 +1,123 @@
+% Methodology: problem definition and the evaluation protocol (issue #7).
+% Features are in feature_engineering.tex and models in models.tex.
+
+\section{Methodology}
+\label{sec:methodology}
+
+This section defines the prediction task and the evaluation protocol shared by
+every Phase~1 model; Phase~2 keeps it unchanged. Fig.~\ref{fig:protocol}
+summarizes the protocol. The features and models it evaluates are described in
+Sections~\ref{sec:feature_engineering} and~\ref{sec:models}.
+
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}[
+    node distance=3.2mm,
+    box/.style={draw, rounded corners=2pt, align=center, font=\footnotesize,
+                 text width=0.74\columnwidth, inner sep=3pt},
+    arrow/.style={-{Stealth[length=2mm]}, thick},
+    note/.style={font=\scriptsize\itshape, align=left}]
+  \node[box] (train) {100 FD001 training engines, run to failure;\\
+    target $y_{u,t}=T_u-t$ (uncapped)};
+  \node[box, below=of train] (folds) {3 engine-grouped folds
+    (\texttt{GroupKFold} on \texttt{unit}, seed 42)};
+  \node[box, below=of folds, fill=black!6] (fit) {Fit on the training fold only:
+    select sensors $\rightarrow$ regime z-score $\rightarrow$ rolling features
+    $\rightarrow$ model};
+  \node[box, below=of fit] (cv) {Predict every cycle of the held-out engines;
+    choose the grid candidate with the lowest mean CV RMSE};
+  \node[box, below=of cv] (refit) {Refit the chosen pipeline on all 100 training
+    engines};
+  \node[box, below=of refit] (test) {Predict every recorded cycle of the 100 test
+    engines; score each once at its last cycle against \texttt{RUL\_FD001.txt}};
+  \draw[arrow] (train) -- (folds);
+  \draw[arrow] (folds) -- (fit);
+  \draw[arrow] (fit) -- (cv);
+  \draw[arrow] (cv) -- (refit);
+  \draw[arrow] (refit) -- (test);
+  \draw[arrow, dashed] (cv.east) -- ++(2.5mm,0) |- (fit.east)
+    node[note, pos=0.25, right] {each fold,\\each candidate};
+\end{tikzpicture}
+\caption{Evaluation protocol. Every data-dependent preprocessing step is part of
+the pipeline (shaded), so it is refitted with the model inside each training
+fold.}
+\label{fig:protocol}
+\end{figure}
+
+\subsection{Problem Formulation}
+Engine $u$ is observed at cycles $t=1,\dots,T_u$ with predictor vector
+$\mathbf{x}_{u,t}$. A training engine runs until it fails after cycle $T_u$, so
+its RUL at cycle $t$ is $y_{u,t}=T_u-t$. A test engine is observed only up to a
+cycle $\tau_u$ before failure, and its true RUL is given for that cycle alone.
+A predictor may use only the engine's own history,
+$\hat{y}_{u,t}=f(\mathbf{x}_{u,1},\dots,\mathbf{x}_{u,t})$, which matches how RUL
+would be estimated during operation. The project brief asks for the target to be
+capped only when stated, so the uncapped $y_{u,t}$ is the primary target. A
+target capped at 125 cycles, $\min(y_{u,t},125)$, which much of the literature
+uses~\cite{Heimes2008recurrent,Zheng2017long}, is treated only as an ablation.
+
+\subsection{Engine-Grouped Validation}
+Consecutive cycles of one engine are nearly identical, so splitting rows at
+random would put cycles of the same engine on both sides of a split and
+overstate accuracy. All validation therefore splits by engine: the 100 training
+engines are divided into three folds with \texttt{GroupKFold} on the engine
+identifier and a fixed seed of 42, and every engine is held out exactly once.
+Cross-validation scores every cycle of the held-out engines, whose RUL ranges up
+to 361 cycles, whereas the test set is scored at last observed cycles whose RUL
+is between 7 and 145. Cross-validation error is therefore used only to choose
+hyperparameters, not as an estimate of test error.
+
+\subsection{Leakage Control}
+Every step that learns from data is fitted on training rows only. Sensor
+selection, the operating-regime clusters and their per-regime statistics are
+part of a scikit-learn pipeline whose final step is the model, so a grid search
+refits them inside each training fold, and the final model refits them on all
+training engines before transforming the test engines. Rolling features use
+only the current and earlier cycles of the same engine, so they are computed
+the same way for a complete training trajectory and for a truncated test
+engine. Unit tests check these properties: folds never share an engine, rolling
+features ignore later cycles, test rows are scaled with training statistics,
+and the model never receives the true RUL.
+
+\subsection{Feature Sets and Tuning}
+Each model is trained on two inputs. The raw set contains the cycle, the three
+operating settings and all 21 sensors (25 predictors). The engineered set is
+the 155 predictors of Section~\ref{sec:feature_engineering}. The engineered
+set is the Phase~1 method, fixed before the test set was scored, and the raw set
+is the comparison that measures what feature engineering adds. Each model is
+tuned by grid search over the candidates in Section~\ref{sec:models}, selected
+by mean CV RMSE, and the best candidate is refitted on all 100 training engines.
+
+\subsection{Official Test Evaluation}
+The fitted pipeline predicts every recorded cycle of each test engine from that
+engine's complete history, so that the rolling features at the last cycle have
+their past. Each engine is then scored once, at its last cycle, against the
+true RUL in \texttt{RUL\_FD001.txt}. All 100 test engines are scored for every
+model, and the per-engine predictions are saved with the metrics so that later
+phases can compare models engine by engine.
+
+\subsection{Metrics}
+With $d_u=\hat{y}_u-y_u$ the error at the last cycle of test engine $u$, we
+report the RMSE, the MAE and the asymmetric score of the PHM08
+challenge~\cite{Saxena2008damage},
+\begin{equation}
+    S=\sum_{u}
+    \begin{cases}
+        e^{-d_u/13}-1, & d_u<0,\\
+        e^{d_u/10}-1, & d_u\ge 0,
+    \end{cases}
+\end{equation}
+which penalizes late predictions ($d_u>0$, more life predicted than remains)
+more than early ones, because an unexpected failure costs more than early
+maintenance. $S$ is a sum, not a mean, and grows exponentially, so one large
+overestimate can dominate it; we always read it together with RMSE and MAE.
+Following the health-stage view of prognostics~\cite{Lei2018machinery}, errors
+are also reported by degradation stage of the true RUL: late
+($y\le 50$), mid ($50<y\le 100$) and early ($y>100$). The FD001 test set has 33,
+34 and 33 engines in these stages.
+
+\subsection{Implementation and Reproducibility}
+All shared code is in a Python package (\texttt{rul}) with 99 unit tests.
+Notebooks 01 to 04 run from the raw NASA files to the saved metrics, figures and
+per-engine predictions. Every stochastic step uses seed 42, and repeated runs
+reproduce the saved results exactly.

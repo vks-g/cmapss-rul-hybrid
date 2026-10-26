@@ -1,0 +1,26 @@
+% Abstract and index terms (issue #7).
+
+\begin{abstract}
+Remaining useful life (RUL) prediction estimates how many operating cycles an
+engine has left before it fails. This report presents Phase~1 of a project that
+compares engineered degradation features with sequence models on the NASA C-MAPSS
+turbofan data: feature-based machine-learning baselines on subset FD001, under a
+protocol that Phase~2 will reuse. Training engines are split by engine, every
+preprocessing step is refitted inside each training fold, the RUL target is
+uncapped, and each of the 100 official test engines is scored once at its last
+cycle. From regime-normalized sensor readings we build 155 causal predictors
+(rolling means, slopes and changes since each engine's first cycle) and tune
+Random Forest, XGBoost and Elastic Net regressors on them and on 25 raw inputs.
+The engineered Random Forest reaches a test RMSE of 27.55 cycles and an MAE of
+17.67 cycles, and all six models lie within five RMSE cycles of each other. The
+engineered features roughly halve the tree models' error near failure (RMSE 7.52
+and 5.62 against 13.50 and 14.32 with raw inputs) but overestimate young engines,
+and a single engine contributes 92\% of the Random Forest's NASA score. Capping
+the training target at 125 cycles lowers the Random Forest's RMSE to 16.21 with
+engineered and 18.66 with raw inputs, reversing their order.
+\end{abstract}
+
+\begin{IEEEkeywords}
+remaining useful life, predictive maintenance, C-MAPSS, feature engineering,
+random forest, XGBoost, elastic net
+\end{IEEEkeywords}

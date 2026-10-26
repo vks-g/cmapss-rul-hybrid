@@ -123,9 +123,10 @@ more flexible end of each tree grid (leaf size~1; depth~5 with 200 trees),
 while on raw features it chose the simpler end. The Elastic Net chose stronger
 shrinkage with a larger ridge share on the engineered matrix, consistent with
 its many correlated rolling features, although the fold variation is too
-large to treat this as more than suggestive. The differences in CV RMSE between models and between feature sets are
-smaller than the standard deviation across folds, so cross-validation alone
-does not establish a preferred model.
+large to treat this as more than suggestive. The differences in CV RMSE
+between models and between feature sets, at most 5.4 cycles, are about the
+size of the standard deviation across folds (3.7 to 5.1 cycles), so
+cross-validation alone does not establish a preferred model.
 
 \begin{table}[t]
 \centering

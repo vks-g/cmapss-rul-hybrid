@@ -48,7 +48,7 @@ engines are scored only at their last observed cycle against the supplied RUL.
 
 \subsection{Exploratory Findings}
 The analysis below uses training trajectories only, so that no test
-information shapes later modelling choices. It describes the data; the
+information shapes later modeling choices. It describes the data; the
 transforms it motivates are fitted inside each training fold, as described in
 Section~\ref{sec:feature_engineering}.
 
@@ -80,8 +80,9 @@ sensor that is fixed within one operating condition still changes between
 conditions.
 
 \subsubsection{Operating conditions dominate raw sensor levels}
-The operating settings of FD002 and FD004 fall into six tight clusters
-(Fig.~\ref{fig:eda_opsettings}), matching the six simulated flight conditions.
+The operating settings of FD002 and FD004 take only six combinations, the six
+simulated flight conditions (Table~\ref{tab:conditions}); every training row
+lies within 0.006 of its condition's mean settings.
 Fig.~\ref{fig:eda_hist} shows the consequence. In FD001 each sensor has a
 single, roughly bell-shaped distribution, whereas in FD002 the same sensors
 split into separate modes, one or more per condition, spread over a range much
@@ -90,14 +91,24 @@ correlations are therefore confounded by the operating condition in these
 subsets. This finding motivates normalizing each sensor within its learned
 operating regime before computing degradation features.
 
-\begin{figure}[!t]
+\begin{table}[!t]
 \centering
-\includegraphics[width=\columnwidth]{../../results/figures/eda_op_settings.png}
-\caption{Operating settings \texttt{op\_1} and \texttt{op\_2} for FD002 and FD004
-training rows (10,000-row random samples). Each cluster is one operating
-condition.}
-\label{fig:eda_opsettings}
-\end{figure}
+\caption{The six operating conditions of FD002 and FD004: mean settings of the
+training rows in each condition and its share of the training rows.}
+\label{tab:conditions}
+\begin{tabular}{rrrrr}
+\hline
+\texttt{op\_1} & \texttt{op\_2} & \texttt{op\_3} & FD002 & FD004 \\
+\hline
+0  & 0.00 & 100 & 15.0\% & 15.1\% \\
+10 & 0.25 & 100 & 15.1\% & 15.1\% \\
+20 & 0.70 & 100 & 15.1\% & 14.8\% \\
+25 & 0.62 & 60  & 14.9\% & 14.9\% \\
+35 & 0.84 & 100 & 15.0\% & 15.0\% \\
+42 & 0.84 & 100 & 25.0\% & 25.1\% \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure*}[!t]
 \centering
@@ -117,8 +128,9 @@ model~\cite{Saxena2008damage}. It has two implications. First, the level and
 the recent slope of a sensor both carry information, which motivates the
 rolling mean and slope features. Second, early-life cycles look alike in the
 sensors while their true RUL differs widely, so errors on early cycles are
-expected to be large under the uncapped target; this is why we also report a
-capped target as an ablation and break errors down by degradation stage. The
+expected to be large under the uncapped target; this is why errors are broken
+down by degradation stage and a capped target is checked as an ablation
+(Section~\ref{sec:results}). The
 life fraction uses each training engine's final cycle and is used here only
 for description; it is never a model input. Individual engines are noisier
 than these averages, and they start from different levels because initial

@@ -21,8 +21,9 @@ low-variance sensor is uninformative. An optional relative-standard-deviation
 cutoff compares the population standard deviation with
 $\max(|\mathrm{mean}|,1)$ and must be chosen using training data only. On all
 official FD001 training engines, the default rule removes sensors
-$s_1,s_5,s_{10},s_{16},s_{18},s_{19}$, retaining 15 channels, including the
-varying $s_6$. The retained list is reused for held-out engines. This reduces
+$s_1,s_5,s_{10},s_{16},s_{18},s_{19}$, retaining 15 channels, including
+$s_6$, which is nearly but not exactly constant (two distinct values). The
+retained list is reused for held-out engines. This reduces
 redundant inputs without supervised feature selection. Khelif
 et al.~\cite{Khelif2017direct} motivate selecting informative sensors for direct
 RUL regression, although their wrapper selection differs from our variability
@@ -115,7 +116,8 @@ training fold; globally exported features cannot be reused for tuning. Rolling
 features are computed independently within each split using only observed
 engine history. Official test scoring uses each engine's last observed cycle
 and the corresponding NASA RUL label. The notebook's training correlations
-support exploratory interpretation only: several rolling means have absolute
-Spearman correlations near 0.75 with RUL, while slopes are noisier. These
+support exploratory interpretation only: the strongest is \texttt{cycle}
+itself ($\rho=-0.79$), several rolling means have absolute Spearman
+correlations near 0.75 with RUL, and slopes are noisier. These
 observations do not establish held-out accuracy or a benefit from any individual
 feature group; that requires model evaluation and ablations.
