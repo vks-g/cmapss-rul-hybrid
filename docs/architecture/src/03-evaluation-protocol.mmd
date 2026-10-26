@@ -1,0 +1,30 @@
+%% Leakage-safe evaluation protocol shared by every model (Phase 1 and Phase 2).
+flowchart LR
+    subgraph SELECT["1 · Model selection: training engines only"]
+        direction TB
+        TRAIN[("FD001 training set<br/>100 engines · 20,631 cycles")]:::data
+        LABEL["Label every cycle<br/>RUL = last cycle − cycle<br/>(uncapped)"]
+        FOLDS["GroupKFold · 3 folds · seed 42<br/>split by engine, never by row"]
+        FIT["Per fold and grid candidate:<br/>fit sensor selection, regime<br/>normalizer and model on the<br/>fold's training engines"]:::fit
+        VAL["Predict the held-out<br/>engines → fold RMSE"]
+        BEST["Keep the candidate with<br/>the lowest mean CV RMSE"]
+        TRAIN --> LABEL --> FOLDS --> FIT --> VAL --> BEST
+    end
+
+    subgraph SCORE["2 · Official test: run once"]
+        direction TB
+        REFIT["Refit the chosen candidate<br/>on all 100 training engines"]:::fit
+        TEST[("FD001 test set<br/>100 engines · 13,096 cycles")]:::data
+        PRED["Predict every test cycle"]
+        LAST["Keep each engine's last cycle<br/>compare with RUL_FD001.txt"]
+        METRICS["RMSE · MAE · NASA score<br/>by stage of true RUL:<br/>late ≤ 50 < mid ≤ 100 < early"]:::output
+        REFIT --> PRED
+        TEST --> PRED
+        PRED --> LAST --> METRICS
+    end
+
+    SELECT --> SCORE
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b

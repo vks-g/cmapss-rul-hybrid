@@ -1,0 +1,45 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+%% Internal imports of the rul package. An arrow A --> B means "A imports B".
+%% Color = subpackage: blue rul.data, orange rul.features, green rul.models,
+%% amber rul.evaluation. Phase 2 modules (windows, trainer, sequence models) are not built yet.
+    EXP["models/experiment.py<br/>EngineFeatures<br/>make_comparison_models"]:::models
+    OFF["evaluation/official.py<br/>predict_test_cycles<br/>score_last_cycle"]:::evaluation
+    MAT["features/matrix.py<br/>build_feature_matrices"]:::features
+
+    ML["models/ml.py<br/>make_models · tune_models"]:::models
+    CLN["features/cleaning.py<br/>select_sensors"]:::features
+    REG["features/regimes.py<br/>RegimeNormalizer"]:::features
+    ROL["features/rolling.py<br/>add_rolling_features"]:::features
+
+    SPL["data/split.py<br/>group_kfold_splits"]:::data
+    MET["evaluation/metrics.py<br/>rmse · mae · nasa_score<br/>evaluate"]:::evaluation
+    LAB["data/labels.py<br/>add_train_rul · last_cycles"]:::data
+    LOAD["data/load.py<br/>load_subset"]:::data
+    PLT["evaluation/plots.py<br/>figures"]:::evaluation
+
+    EXP --> ML
+    EXP --> CLN
+    EXP --> REG
+    EXP --> ROL
+    EXP --> LOAD
+    MAT --> CLN
+    MAT --> REG
+    MAT --> ROL
+    MAT --> LAB
+    MAT --> LOAD
+    OFF --> LAB
+    OFF --> MET
+    ML --> SPL
+    ML --> MET
+    CLN --> LOAD
+    REG --> LOAD
+    ROL --> LOAD
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef features fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef models fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
+    classDef evaluation fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
