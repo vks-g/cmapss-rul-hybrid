@@ -1,0 +1,29 @@
+%% End-to-end system: from the NASA files to the scored results.
+flowchart LR
+    RAW[("NASA C-MAPSS<br/>FD001–FD004")]:::data
+    DATA["rul.data<br/>load · labels · split<br/>RUL = last cycle − cycle<br/>engine-grouped folds"]
+    PRE["rul.features<br/>cleaning · regimes<br/>fitted on training<br/>engines only"]:::fit
+    ROL["Rolling features<br/>mean · slope · health<br/>windows 5 · 10 · 20"]
+    WIN["Sequence windows<br/>inside one engine"]:::planned
+
+    subgraph MOD["Models"]
+        ML["Phase 1 · ML<br/>Random Forest<br/>XGBoost · Elastic Net"]:::model
+        HY["Hybrid<br/>sequence encoder<br/>+ feature branch"]:::planned
+        DL["Phase 2 · DL<br/>LSTM · Temporal CNN<br/>Transformer"]:::planned
+    end
+
+    EVAL["rul.evaluation<br/>last-cycle test scoring<br/>RMSE · MAE · NASA score<br/>early / mid / late stage"]
+    OUT[["results/ · report<br/>slides"]]:::output
+
+    RAW --> DATA -- training folds --> PRE
+    PRE --> ROL --> ML --> EVAL
+    PRE -.-> WIN -.-> DL -.-> EVAL
+    ROL -.-> HY
+    WIN -.-> HY -.-> EVAL
+    EVAL --> OUT
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
+    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
