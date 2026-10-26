@@ -1,0 +1,30 @@
+%% Which scripts and notebooks read and write which files.
+flowchart LR
+    DLS["scripts/<br/>download_data.py"]
+    RAW[("data/raw/CMAPSSData/<br/>12 dataset files<br/>(gitignored)")]:::data
+
+    subgraph NB["notebooks/phase1 (run in order)"]
+        N1["01_eda<br/>lifetimes · flat sensors<br/>regimes · trends"]
+        N2["02_feature_engineering<br/>feature matrices"]
+        N3["03_ml_models<br/>raw vs engineered CV<br/>SHAP explanations"]
+        N4["04_ml_results<br/>official FD001 test"]
+        N1 --> N2 --> N3 --> N4
+    end
+
+    CAP["scripts/<br/>capped_rul_ablation.py"]
+    PROC[("data/processed/<br/>FD001 matrices + manifest<br/>(gitignored)")]:::data
+    MET[("results/metrics/<br/>fd001_test.json<br/>fd001_test_capped125.json<br/>per-engine predictions")]:::output
+    FIG[("results/figures/<br/>fd001_test_*.png")]:::output
+    DOCS["reports/phase1/main.pdf<br/>presentations/phase1.pdf"]:::output
+
+    DLS --> RAW
+    RAW --> N1
+    N2 --> PROC
+    N4 --> MET
+    N4 --> FIG
+    RAW --> CAP --> MET
+    MET --> DOCS
+    FIG --> DOCS
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b

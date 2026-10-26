@@ -1,0 +1,25 @@
+%% Engineered feature pipeline (rul.models.experiment.EngineFeatures), FD001 counts.
+flowchart LR
+    TRAIN[("Training engines<br/>raw readings")]:::data
+    ANY[("Any split to transform<br/>train · validation · test<br/>unit · cycle · op_1–op_3 · s_1–s_21")]:::data
+
+    subgraph FITSTEP["fit: training engines only"]
+        SEL["select_sensors<br/>drop constant sensors<br/>FD001: 21 → 15"]:::fit
+        KM["RegimeNormalizer.fit<br/>KMeans on op settings<br/>one scaler per regime"]:::fit
+    end
+
+    NORM["RegimeNormalizer.transform<br/>assign each cycle a regime<br/>z-score sensors per regime"]
+    ROLL["add_rolling_features<br/>per engine, past cycles only<br/>mean · slope · health<br/>windows 5 · 10 · 20"]
+    ENG["155 engineered predictors<br/>cycle · 3 settings · regime<br/>15 sensors<br/>15 × 3 statistics × 3 windows"]:::output
+    RAW["25 raw predictors<br/>cycle · 3 settings · 21 sensors"]:::output
+
+    TRAIN --> SEL
+    TRAIN --> KM
+    ANY --> NORM --> ROLL --> ENG
+    KM -. regimes and scalers .-> NORM
+    SEL -. kept sensors .-> ROLL
+    ANY -- raw variant --> RAW
+
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
