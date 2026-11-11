@@ -1,6 +1,6 @@
 """Shared PyTorch training loop for every Phase 2 sequence model.
 
-Every model is trained the same way: MSE on the (capped) RUL, Adam, gradient
+Every model is trained the same way: MSE (or the asymmetric loss) on the (capped) RUL, Adam, gradient
 clipping and a learning-rate schedule that does not depend on validation
 data, so a refit for a fixed number of epochs follows exactly the same
 schedule as the cross-validation run it copies.
@@ -23,7 +23,35 @@ from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 SCHEDULERS = ("cosine", "none")
-LOSSES = {"mse": nn.MSELoss}
+
+
+class AsymmetricMSELoss(nn.Module):
+    """Squared error that weighs late predictions (``prediction > target``) more.
+
+    A late prediction promises more life than the engine has, so it costs more
+    than an early one, as in the NASA score (``rul.evaluation.metrics.nasa_score``),
+    whose scales are 10 for late and 13 for early errors. The default weight,
+    ``(13 / 10) ** 2``, is the ratio of the score's squared (second-order) terms,
+    which matches a squared loss; its linear terms would give 1.3. The loss is
+    scale-free, so it works on the scaled targets the trainer uses.
+
+    Args:
+        late_weight: Weight on squared late errors; early errors weigh 1.
+    """
+
+    LATE_WEIGHT = (13 / 10) ** 2
+
+    def __init__(self, late_weight: float = LATE_WEIGHT) -> None:
+        super().__init__()
+        self.late_weight = late_weight
+
+    def forward(self, prediction: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        error = prediction - target
+        weight = torch.where(error > 0, self.late_weight, 1.0)
+        return torch.mean(weight * error**2)
+
+
+LOSSES = {"mse": nn.MSELoss, "asymmetric": AsymmetricMSELoss}
 
 Inputs = np.ndarray | Sequence[np.ndarray]
 
@@ -42,7 +70,9 @@ class TrainConfig:
         grad_clip: Max gradient norm, or ``None`` for no clipping.
         scheduler: ``"cosine"`` (annealed over ``epochs``) or ``"none"``.
         patience: Epochs without a better validation RMSE before stopping.
-        loss: Training loss; ``"mse"``.
+        loss: Training loss, ``"mse"`` or ``"asymmetric"`` (late errors weigh
+            more, see :class:`AsymmetricMSELoss`). Early stopping always uses
+            validation RMSE.
         device: Torch device. Reported runs use ``"cpu"``.
         seed: Seed for weight initialisation, dropout and batch order.
     """
