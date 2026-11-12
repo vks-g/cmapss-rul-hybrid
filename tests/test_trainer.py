@@ -189,3 +189,33 @@ def test_input_noise_reaches_training_only_and_supports_multiple_inputs():
         assert not training
         assert torch.all(windows == 2) and torch.all(features == 3)
     assert not X.any() and not extra.any()
+
+
+def test_asymmetric_loss_charges_late_errors_more():
+    from rul.training.trainer import AsymmetricMSELoss
+
+    loss = AsymmetricMSELoss()
+    target = torch.tensor([1.0, 1.0])
+    late = loss(torch.tensor([1.5, 1.5]), target)    # predicts more life than is left
+    early = loss(torch.tensor([0.5, 0.5]), target)
+    assert late > early
+    assert torch.isclose(late / early, torch.tensor(AsymmetricMSELoss.LATE_WEIGHT))
+
+
+def test_asymmetric_loss_with_weight_one_is_mse():
+    from rul.training.trainer import AsymmetricMSELoss
+
+    pred, target = torch.randn(50), torch.randn(50)
+    assert torch.isclose(AsymmetricMSELoss(late_weight=1.0)(pred, target), nn.MSELoss()(pred, target))
+
+
+def test_asymmetric_loss_trains_and_leans_early_on_noisy_targets():
+    X, y = synthetic(512)
+    y = y + np.random.default_rng(1).normal(scale=15, size=y.shape).astype(np.float32)
+    bias = {}
+    for loss in ("mse", "asymmetric"):
+        model = make_model(0)
+        config = TrainConfig(epochs=30, batch_size=32, learning_rate=1e-2, seed=0, loss=loss)
+        fit(model, X, y, config, target_scale=100)
+        bias[loss] = float(np.mean(predict(model, X, target_scale=100) - y))
+    assert bias["asymmetric"] < bias["mse"]

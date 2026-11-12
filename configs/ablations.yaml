@@ -7,9 +7,6 @@
 #
 # All variants are scored on the 3 Phase 1 folds with the selection RMSE from
 # dl_base.yaml (#55). The official test set is never used here.
-#
-# The asymmetric-loss variant joins the `loss` group once the trainer has that
-# loss (#69); only `mse` exists today.
 
 base: hybrid_gated.yaml
 
@@ -36,8 +33,9 @@ groups:
     cycle_off: {}
     cycle_on: {inputs.include_cycle: true}
 
-  loss:
+  loss:               # asymmetric: late predictions weigh (13/10)^2 more, as in the NASA score
     loss_mse: {}
+    loss_asymmetric: {training.loss: asymmetric}
 
   branches:           # which branches the hybrid uses, and how they are joined
     branch_sequence: {model.fusion: sequence}
