@@ -87,8 +87,8 @@ Each commit should do one thing. "wip", "update", and "changes" are not commit m
 - Build sequence windows **inside engine boundaries**. A window never spans two engines.
 - Training RUL = (final cycle of that engine) − (current cycle).
 - Test engines are scored on their **last cycle** against `RUL_FDxxx.txt`.
-- **Target (Phase 2):** every model, ML included, trains on RUL capped at the value chosen from training engines (#55; use 125 until it lands). Uncapped results are always shown beside the capped ones, and test engines are always scored against the true, uncapped RUL.
-- **Tuning and ablations** are scored on held-out training engines with the selection metric from #55, never on the official test set.
+- **Target (Phase 2):** every model, ML included, trains on RUL capped at the value chosen from training engines in #55, which is 125. Uncapped results are always shown beside the capped ones, and test engines are always scored against the true, uncapped RUL.
+- **Tuning and ablations** are scored on held-out training engines with the selection metric from #55: the RMSE on held-out cycles whose true RUL is at most 130. They are never scored on the official test set.
 - **Early stopping** uses an engine-level holdout inside the training fold. The final refit trains on all training engines for the median best epoch across folds.
 - **The official test runs once**, after the model freeze, through #71. No model or config changes after it.
 - Every sequence model implements `rul.models.base.SequenceEncoder` (`[batch, window, features] -> [batch, output_dim]`) and is wrapped in `SequenceRegressor`, so the trainer, ablations and hybrids treat all of them the same way.
