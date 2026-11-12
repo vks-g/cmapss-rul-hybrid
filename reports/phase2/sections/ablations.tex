@@ -76,11 +76,12 @@ cycles score within 0.07 cycles of the 30-cycle base. Every interval lies
 inside $\pm0.26$, and every corrected $p$ is 1. The answer holds at every
 life stage (Fig.~\ref{fig:ablations}, right). Late-stage RMSE falls from
 9.62 at 30 cycles to 9.44 at 60, which is smaller than the seed spread of
-0.24--0.34. Two features of the setup explain this. The feature branch
-already summarizes the last 20 cycles, so extra raw history adds little.
-FD001 also degrades slowly and smoothly near failure, where most of the
-selection band lies. Chen et al.~\cite{Chen2021machine} likewise found 30 to
-be the best window for an FD001 LSTM. Our result applies to this model and
+0.24--0.34. Two features of the setup may explain this, though neither was
+tested here. The feature branch already summarizes the last 20 cycles, so
+extra raw history may add little. FD001 also degrades slowly and smoothly
+near failure. Chen et al.~\cite{Chen2021machine} found 30 to be the best
+window for an FD001 LSTM, with longer windows worse; here longer windows are
+no better but also no worse. Our result applies to this model and
 subset. FD004, with two fault modes, could behave differently and is not
 tested here.
 
@@ -105,9 +106,11 @@ and the difference is not significant. It is more accurate in the mid and
 late stages (14.70 and 7.92 against 20.47 and 9.70) and less accurate in
 the early stage (24.67 against 19.41). This repeats the tabular result of
 Section~\ref{sec:target_selection}. The selection rule rules out 150 and no
-cap, but it cannot separate 100 from 125. The ablation answers that
-section's open question: the sequence model does not clearly prefer a
-different cap.
+cap, but it cannot separate 100 from 125. The result bears on that
+section's caveat that the sequence models may prefer a different cap. At one
+seed, Hybrid A leans toward 100 by 1.13 cycles, more than its seed spread,
+but the difference is not significant. A multi-seed run would be needed to
+settle it.
 
 \paragraph{Feature groups and cycle index}
 No change to the feature groups is significant: no age $+0.68$, rolling
