@@ -1,0 +1,5 @@
+subset,model,scaling,test engines,RMSE,MAE,NASA score,late RMSE,mid RMSE,early RMSE,Gupta 2026 best (test)
+FD002,LSTM,per-regime,259,26.58 ± 0.41,17.92,7927,7.71,20.31,39.72,22.73
+FD002,Hybrid A,global,259,27.01 ± 0.80,18.01,10463,7.04,20.03,40.74,22.73
+FD004,LSTM,per-regime,248,27.02 ± 0.61,19.65,4993,9.44,21.94,37.55,21.78
+FD004,Hybrid A,per-regime,248,26.88 ± 0.34,19.05,5944,11.61,21.13,37.15,21.78
