@@ -1,0 +1,57 @@
+% Issue #81, part "Conclusion and future work"; owner: vks-g. Input from reports/phase2/main.tex.
+% Numbers repeat Sections results, validation and hybrid; sources are listed there.
+
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+Phase~2 compared deep sequence models, machine learning on engineered
+features and two hybrids on C-MAPSS FD001, under one leakage-controlled
+protocol, with a training cap chosen from the training engines and every
+choice fixed by cross-validation before the official test was read once. The
+answers to the three questions of Section~\ref{sec:introduction} are as
+follows.
+\begin{enumerate}
+\item \emph{Sequence models against engineered features: a tie.} The LSTM,
+temporal CNN and Transformer reach test RMSEs of 15.60 to 15.95, and XGBoost on
+the engineered features 15.71. What deep learning adds is that it matches the
+engineered features from raw sensor windows. Near failure, the networks are as
+accurate as the trees on engineered features (5.1 to 7.6 cycles), while ML on
+raw inputs is two to four times worse.
+\item \emph{Which encoder: none.} Recurrence, dilated convolution and
+attention lie within 0.35 cycles of each other on the test, about their seed
+spread. They differ in bias rather than accuracy: the LSTM and Transformer
+predict late on average, which the NASA score punishes.
+\item \emph{Hybrids: a null result.} The two-stage hybrid has the lowest test
+RMSE ($15.18\pm0.55$) and NASA score ($356\pm22$), and gated fusion varied less
+across seeds than the LSTM in cross-validation. Neither passes the value test
+fixed in advance on the official test, so we do not claim that either adds
+value on FD001.
+\end{enumerate}
+The pipeline mattered more than the architecture. Removing the cap costs every
+model 7 to 15 cycles, and raw instead of engineered inputs cost the ML models
+1.9 to 4.6. With 100 test engines, models within about a cycle of each other
+cannot be ranked, and cross-validation ranks them no better.
+
+Five directions follow from these results.
+\begin{itemize}
+\item \emph{Seed ensembles.} Averaging five seeds lowered the test RMSE of
+Hybrid~B to 14.71, below any single seed. It should be fixed in advance and
+evaluated in cross-validation before it is trusted.
+\item \emph{Multi-regime subsets.} FD002 and FD004 reused the FD001 settings.
+A cap of 150 and longer windows, as in Gupta's best
+configurations~\cite{Gupta2026auditing}, chosen on their own training engines,
+are the first things to test. The hybrid may also show more value where
+operating regimes make features harder to engineer.
+\item \emph{More test engines.} The narrowest paired interval spans 1.8
+cycles, so gains of the size reported for feature fusion on FD001 cannot be
+resolved with 100 engines. Larger benchmarks would give these comparisons the
+power they need.
+\item \emph{Uncertainty and asymmetric costs.} Maintenance needs a lower bound
+on the RUL, not only a point estimate. Predictive intervals~\cite{Sharma2025uncertainty}
+and the asymmetric loss, which cut the NASA score by 12\% at unchanged RMSE in
+the ablations, both target the cost of late predictions directly.
+\item \emph{The cap's blind spot.} Every capped model predicts early for
+engines above the cap, which carries most of the error on FD002 and FD004.
+A target that keeps some information above the cap would address the largest
+remaining source of error.
+\end{itemize}

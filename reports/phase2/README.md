@@ -6,15 +6,15 @@ section file has one owner, assigned through its GitHub issue.
 
 | Order | File in `sections/` | Issue | Owner |
 |---|---|---|---|
-| 1 | `abstract.tex`, `introduction.tex` | #81 | open |
+| 1 | `abstract.tex`, `introduction.tex` | #81 | 11yashiagrawal |
 | 2 | `literature_review.tex` (+ `.bib`) | #63 | 11yashiagrawal |
 | 3 | `target.tex` (subsection under *Training Target and Model Selection*) | #55 | 11yashiagrawal |
 | 4 | `dl_dataset.tex` (+ `.bib`) | #74 | affan80 |
 | 5 | `theory.tex` (+ `.bib`) | #67 | 11yashiagrawal |
-| 6 | `architecture.tex`, `hybrid.tex` | #81 | open |
+| 6 | `architecture.tex`; `hybrid.tex` | #81 | 11yashiagrawal; vks-g |
 | 7 | `ablations.tex` | #75 | Bytebard089 |
 | 8 | `validation.tex`, `interpretability.tex` | #76 | MilindDevX |
-| 9 | `results.tex`, `conclusion.tex`, `contributions.tex` | #81 | open |
+| 9 | `results.tex`, `conclusion.tex`, `contributions.tex` | #81 | vks-g |
 
 Write your username next to a #81 part in the issue before you start it (#83 asks for every
 part to have an owner by Sat 14 Nov), and update the table here in your PR.
@@ -31,6 +31,12 @@ References: until #80 adds `refs.bib`, `main.tex` uses `../phase1/refs.bib` plus
 (the same key in two fragments); #80 removes them. Once `refs.bib` exists it is used alone.
 
 Figures are read from `../../results/figures/`, so build inside a full checkout.
+
+Generated tables in `tables/` come from `scripts/prepare_dl_dataset_report.py`,
+`scripts/prepare_ablations_table.py`, `scripts/prepare_validation_tables.py` and
+`scripts/prepare_results_tables.py`. Rerun
+them from the repository root after their notebooks change; the tests check that the
+committed tables match.
 
 From this folder, with [Tectonic](https://tectonic-typesetting.github.io/):
 
