@@ -53,7 +53,7 @@ worse. Otherwise the result is null.
 
 \subsection{Results on FD001}
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Official FD001 test, 100 engines scored at their last cycle.
 RMSE: mean $\pm$ s.d.\ over seeds (one run for the ML baselines). 95\% CI:
@@ -61,11 +61,10 @@ bootstrap over engines for the seed-averaged RMSE. All models are trained
 with the cap of 125 except the last column.}
 \label{tab:validation_models}
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{\input{tables/validation_models}}
-\end{table}
+\input{tables/validation_models}
+\end{table*}
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Paired comparisons on the official FD001 test, cap 125. $\Delta$:
 RMSE of A minus B, paired bootstrap 95\% CI. $p_\mathrm{Holm}$: Wilcoxon
@@ -75,9 +74,8 @@ Criterion~(3) cannot be judged for Hybrid~B, whose branch ran with one
 seed.}
 \label{tab:validation_paired}
 \footnotesize
-\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{\input{tables/validation_paired}}
-\end{table}
+\input{tables/validation_paired}
+\end{table*}
 
 \begin{figure*}[t]
 \centering
@@ -139,7 +137,7 @@ who found a larger effect on FD004 than on FD002 (mean test-set changes of
 $-7.40$ and $-4.39$). Each model's better scaling was then scored once on the
 official test, at seeds 42--44 (Table~\ref{tab:multi_regime_test}).
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
 \caption{Official FD002 and FD004 test (259 and 248 engines), seeds 42--44.
 Scaling: the setting chosen by cross-validation. The last three columns split
@@ -147,9 +145,8 @@ the error at the training cap: RMSE on engines whose true RUL at the last
 cycle is at most 125, RMSE on those above it, and the share above it.}
 \label{tab:multi_regime_test}
 \footnotesize
-\setlength{\tabcolsep}{2.5pt}
-\resizebox{\columnwidth}{!}{\input{tables/multi_regime_test}}
-\end{table}
+\input{tables/multi_regime_test}
+\end{table*}
 
 On both subsets, the LSTM and Hybrid~A score within half a cycle of each
 other (26.58 to 27.02), which is about their seed spread. Our best runs are
