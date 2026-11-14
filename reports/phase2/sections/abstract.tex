@@ -1,8 +1,8 @@
 % Abstract and index terms (#81, part "Abstract and introduction"; owner: 11yashiagrawal).
 % Cross-validation numbers: results/metrics/fd001_rul_cap_choice.json (#55),
 % fd001_ml_capped_cv.json (#61), fd001_cv_{lstm,tcn,transformer}{,_uncapped}.json,
-% fd001_hybrid_value_test.json (#68). Official-test numbers arrive with #71:
-% every \pending{} must be replaced before the final build.
+% fd001_hybrid_value_test.json (#68). Official-test numbers: fd001_final_test.json,
+% fd001_ml_capped_test.json (#71) and fd001_validation_value_test.json (#72).
 
 \providecommand{\pending}[1]{\textbf{[#1]}\typeout{Placeholder: pending #1}}
 
@@ -25,8 +25,11 @@ RMSE, while the three encoders lie within 1.7 cycles of each other (15.6 to
 three cycles, but XGBoost on the Phase~1 engineered features remains best (14.5).
 Neither hybrid beats its best single branch on accuracy under a test fixed in
 advance; gated fusion only lowers the variance across seeds. On the 100
-official test engines, scored once after the model freeze,
-\pending{\#71: final test RMSE and NASA score of the frozen models}.
+official test engines, scored once after the model freeze, the three encoders,
+both hybrids and XGBoost on engineered features all score between 15.18 and
+15.95 RMSE, closer than the test can resolve. The two-stage hybrid has the
+lowest RMSE and NASA score ($15.18\pm0.55$ and 356), but neither hybrid passes
+the value test there, so we report a null result for both.
 \end{abstract}
 
 \begin{IEEEkeywords}
