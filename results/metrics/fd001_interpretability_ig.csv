@@ -1,0 +1,316 @@
+model,sensor,mean |IG|,seed min,seed max,kind,stage,position
+Transformer,s_2,11.8821,10.5227,14.1094,sensor,,
+Transformer,s_3,5.0301,4.3258,5.7728,sensor,,
+Transformer,s_4,12.6226,11.1904,13.6508,sensor,,
+Transformer,s_6,1.476,1.2684,1.704,sensor,,
+Transformer,s_7,12.4834,11.3607,14.2498,sensor,,
+Transformer,s_8,12.287,10.4879,13.5872,sensor,,
+Transformer,s_9,21.3409,18.4004,23.1844,sensor,,
+Transformer,s_11,16.5641,14.4101,20.535,sensor,,
+Transformer,s_12,15.0917,13.2086,16.6288,sensor,,
+Transformer,s_13,14.4222,12.9352,16.8782,sensor,,
+Transformer,s_14,12.6015,10.1561,16.2443,sensor,,
+Transformer,s_15,9.4055,7.8991,12.0698,sensor,,
+Transformer,s_17,7.6945,6.2853,9.0512,sensor,,
+Transformer,s_20,8.7097,8.0046,9.3463,sensor,,
+Transformer,s_21,6.3255,5.2668,7.6589,sensor,,
+LSTM,s_2,14.3196,12.1388,16.2619,sensor,,
+LSTM,s_3,7.2721,6.5109,7.78,sensor,,
+LSTM,s_4,16.354,13.5459,19.1918,sensor,,
+LSTM,s_6,1.5892,1.2481,2.0797,sensor,,
+LSTM,s_7,13.5961,11.6079,15.1066,sensor,,
+LSTM,s_8,13.7504,12.7804,14.2497,sensor,,
+LSTM,s_9,18.5917,16.649,22.2421,sensor,,
+LSTM,s_11,16.6144,14.3092,18.7983,sensor,,
+LSTM,s_12,16.1265,15.045,17.557,sensor,,
+LSTM,s_13,16.387,14.7877,17.4979,sensor,,
+LSTM,s_14,15.5431,12.7023,18.6481,sensor,,
+LSTM,s_15,9.8689,7.6308,11.7444,sensor,,
+LSTM,s_17,8.9471,6.9649,10.6905,sensor,,
+LSTM,s_20,9.5081,9.1539,10.4215,sensor,,
+LSTM,s_21,7.6698,6.4116,8.6558,sensor,,
+Temporal CNN,s_2,15.429,13.887,18.1565,sensor,,
+Temporal CNN,s_3,12.5759,10.7893,13.9719,sensor,,
+Temporal CNN,s_4,16.2704,15.7705,17.2781,sensor,,
+Temporal CNN,s_6,7.2029,3.616,9.8642,sensor,,
+Temporal CNN,s_7,14.3299,13.217,15.3212,sensor,,
+Temporal CNN,s_8,15.4328,14.3343,16.4767,sensor,,
+Temporal CNN,s_9,14.8909,13.3206,16.6445,sensor,,
+Temporal CNN,s_11,16.9727,15.9215,18.2143,sensor,,
+Temporal CNN,s_12,17.2285,15.9531,18.9647,sensor,,
+Temporal CNN,s_13,17.7614,14.5847,20.6914,sensor,,
+Temporal CNN,s_14,17.2993,15.8214,20.058,sensor,,
+Temporal CNN,s_15,13.5632,11.9195,15.4897,sensor,,
+Temporal CNN,s_17,10.9203,9.9659,12.0148,sensor,,
+Temporal CNN,s_20,12.2489,10.8122,14.3068,sensor,,
+Temporal CNN,s_21,14.8969,13.9655,17.4453,sensor,,
+LSTM,,7.1196,,,time,early,-29.0
+LSTM,,8.3111,,,time,early,-28.0
+LSTM,,8.1855,,,time,early,-27.0
+LSTM,,7.5084,,,time,early,-26.0
+LSTM,,6.6639,,,time,early,-25.0
+LSTM,,5.8165,,,time,early,-24.0
+LSTM,,4.7769,,,time,early,-23.0
+LSTM,,4.0904,,,time,early,-22.0
+LSTM,,3.6249,,,time,early,-21.0
+LSTM,,2.7614,,,time,early,-20.0
+LSTM,,2.4119,,,time,early,-19.0
+LSTM,,2.0151,,,time,early,-18.0
+LSTM,,1.7024,,,time,early,-17.0
+LSTM,,1.7455,,,time,early,-16.0
+LSTM,,1.5955,,,time,early,-15.0
+LSTM,,1.6735,,,time,early,-14.0
+LSTM,,1.8136,,,time,early,-13.0
+LSTM,,2.218,,,time,early,-12.0
+LSTM,,2.5286,,,time,early,-11.0
+LSTM,,3.0405,,,time,early,-10.0
+LSTM,,3.4199,,,time,early,-9.0
+LSTM,,4.2533,,,time,early,-8.0
+LSTM,,4.6916,,,time,early,-7.0
+LSTM,,5.4403,,,time,early,-6.0
+LSTM,,6.1654,,,time,early,-5.0
+LSTM,,6.9873,,,time,early,-4.0
+LSTM,,7.2961,,,time,early,-3.0
+LSTM,,8.5427,,,time,early,-2.0
+LSTM,,8.3714,,,time,early,-1.0
+LSTM,,9.7833,,,time,early,0.0
+LSTM,,4.9167,,,time,late,-29.0
+LSTM,,5.8774,,,time,late,-28.0
+LSTM,,6.34,,,time,late,-27.0
+LSTM,,7.2202,,,time,late,-26.0
+LSTM,,6.9987,,,time,late,-25.0
+LSTM,,6.803,,,time,late,-24.0
+LSTM,,6.5294,,,time,late,-23.0
+LSTM,,6.4643,,,time,late,-22.0
+LSTM,,5.9288,,,time,late,-21.0
+LSTM,,5.3291,,,time,late,-20.0
+LSTM,,4.9028,,,time,late,-19.0
+LSTM,,4.7106,,,time,late,-18.0
+LSTM,,4.4964,,,time,late,-17.0
+LSTM,,4.3196,,,time,late,-16.0
+LSTM,,4.2175,,,time,late,-15.0
+LSTM,,4.6025,,,time,late,-14.0
+LSTM,,4.8155,,,time,late,-13.0
+LSTM,,5.1977,,,time,late,-12.0
+LSTM,,5.5475,,,time,late,-11.0
+LSTM,,6.3316,,,time,late,-10.0
+LSTM,,7.2446,,,time,late,-9.0
+LSTM,,8.4781,,,time,late,-8.0
+LSTM,,9.1674,,,time,late,-7.0
+LSTM,,10.4026,,,time,late,-6.0
+LSTM,,12.0598,,,time,late,-5.0
+LSTM,,13.974,,,time,late,-4.0
+LSTM,,15.7357,,,time,late,-3.0
+LSTM,,17.6078,,,time,late,-2.0
+LSTM,,19.3705,,,time,late,-1.0
+LSTM,,22.2167,,,time,late,0.0
+LSTM,,6.7689,,,time,mid,-29.0
+LSTM,,7.8191,,,time,mid,-28.0
+LSTM,,8.0769,,,time,mid,-27.0
+LSTM,,7.5189,,,time,mid,-26.0
+LSTM,,7.2878,,,time,mid,-25.0
+LSTM,,6.4834,,,time,mid,-24.0
+LSTM,,5.6754,,,time,mid,-23.0
+LSTM,,4.9754,,,time,mid,-22.0
+LSTM,,4.3985,,,time,mid,-21.0
+LSTM,,3.7479,,,time,mid,-20.0
+LSTM,,2.8923,,,time,mid,-19.0
+LSTM,,2.9188,,,time,mid,-18.0
+LSTM,,2.422,,,time,mid,-17.0
+LSTM,,2.3589,,,time,mid,-16.0
+LSTM,,2.3098,,,time,mid,-15.0
+LSTM,,2.6041,,,time,mid,-14.0
+LSTM,,2.7713,,,time,mid,-13.0
+LSTM,,3.211,,,time,mid,-12.0
+LSTM,,3.4433,,,time,mid,-11.0
+LSTM,,3.8883,,,time,mid,-10.0
+LSTM,,4.62,,,time,mid,-9.0
+LSTM,,5.1641,,,time,mid,-8.0
+LSTM,,5.7058,,,time,mid,-7.0
+LSTM,,6.6009,,,time,mid,-6.0
+LSTM,,7.5958,,,time,mid,-5.0
+LSTM,,7.7199,,,time,mid,-4.0
+LSTM,,8.8004,,,time,mid,-3.0
+LSTM,,9.3928,,,time,mid,-2.0
+LSTM,,9.013,,,time,mid,-1.0
+LSTM,,10.4596,,,time,mid,0.0
+Temporal CNN,,5.4273,,,time,early,-29.0
+Temporal CNN,,8.5913,,,time,early,-28.0
+Temporal CNN,,5.374,,,time,early,-27.0
+Temporal CNN,,6.1485,,,time,early,-26.0
+Temporal CNN,,4.5812,,,time,early,-25.0
+Temporal CNN,,8.7262,,,time,early,-24.0
+Temporal CNN,,3.177,,,time,early,-23.0
+Temporal CNN,,4.8394,,,time,early,-22.0
+Temporal CNN,,3.4174,,,time,early,-21.0
+Temporal CNN,,6.3375,,,time,early,-20.0
+Temporal CNN,,4.4861,,,time,early,-19.0
+Temporal CNN,,5.6404,,,time,early,-18.0
+Temporal CNN,,3.5923,,,time,early,-17.0
+Temporal CNN,,9.4504,,,time,early,-16.0
+Temporal CNN,,3.0881,,,time,early,-15.0
+Temporal CNN,,5.0997,,,time,early,-14.0
+Temporal CNN,,3.0247,,,time,early,-13.0
+Temporal CNN,,7.2927,,,time,early,-12.0
+Temporal CNN,,3.6806,,,time,early,-11.0
+Temporal CNN,,6.2717,,,time,early,-10.0
+Temporal CNN,,4.4604,,,time,early,-9.0
+Temporal CNN,,10.5373,,,time,early,-8.0
+Temporal CNN,,4.3495,,,time,early,-7.0
+Temporal CNN,,7.9724,,,time,early,-6.0
+Temporal CNN,,5.9317,,,time,early,-5.0
+Temporal CNN,,9.9889,,,time,early,-4.0
+Temporal CNN,,6.0233,,,time,early,-3.0
+Temporal CNN,,11.3045,,,time,early,-2.0
+Temporal CNN,,6.7659,,,time,early,-1.0
+Temporal CNN,,11.5624,,,time,early,0.0
+Temporal CNN,,4.3625,,,time,late,-29.0
+Temporal CNN,,6.9956,,,time,late,-28.0
+Temporal CNN,,4.4176,,,time,late,-27.0
+Temporal CNN,,6.6072,,,time,late,-26.0
+Temporal CNN,,4.4072,,,time,late,-25.0
+Temporal CNN,,8.3306,,,time,late,-24.0
+Temporal CNN,,3.2914,,,time,late,-23.0
+Temporal CNN,,5.8637,,,time,late,-22.0
+Temporal CNN,,3.715,,,time,late,-21.0
+Temporal CNN,,7.6078,,,time,late,-20.0
+Temporal CNN,,5.1206,,,time,late,-19.0
+Temporal CNN,,8.5967,,,time,late,-18.0
+Temporal CNN,,5.467,,,time,late,-17.0
+Temporal CNN,,11.8295,,,time,late,-16.0
+Temporal CNN,,4.1437,,,time,late,-15.0
+Temporal CNN,,8.2566,,,time,late,-14.0
+Temporal CNN,,4.9354,,,time,late,-13.0
+Temporal CNN,,10.7856,,,time,late,-12.0
+Temporal CNN,,5.2647,,,time,late,-11.0
+Temporal CNN,,9.8151,,,time,late,-10.0
+Temporal CNN,,6.6904,,,time,late,-9.0
+Temporal CNN,,15.3505,,,time,late,-8.0
+Temporal CNN,,6.1292,,,time,late,-7.0
+Temporal CNN,,11.4533,,,time,late,-6.0
+Temporal CNN,,8.2167,,,time,late,-5.0
+Temporal CNN,,18.5193,,,time,late,-4.0
+Temporal CNN,,9.1437,,,time,late,-3.0
+Temporal CNN,,18.124,,,time,late,-2.0
+Temporal CNN,,10.7384,,,time,late,-1.0
+Temporal CNN,,27.9141,,,time,late,0.0
+Temporal CNN,,5.391,,,time,mid,-29.0
+Temporal CNN,,7.6826,,,time,mid,-28.0
+Temporal CNN,,5.2074,,,time,mid,-27.0
+Temporal CNN,,5.9323,,,time,mid,-26.0
+Temporal CNN,,4.2294,,,time,mid,-25.0
+Temporal CNN,,8.2891,,,time,mid,-24.0
+Temporal CNN,,3.5528,,,time,mid,-23.0
+Temporal CNN,,5.393,,,time,mid,-22.0
+Temporal CNN,,3.7215,,,time,mid,-21.0
+Temporal CNN,,7.6945,,,time,mid,-20.0
+Temporal CNN,,4.3255,,,time,mid,-19.0
+Temporal CNN,,7.2224,,,time,mid,-18.0
+Temporal CNN,,4.4194,,,time,mid,-17.0
+Temporal CNN,,9.7782,,,time,mid,-16.0
+Temporal CNN,,3.3947,,,time,mid,-15.0
+Temporal CNN,,6.8266,,,time,mid,-14.0
+Temporal CNN,,3.6613,,,time,mid,-13.0
+Temporal CNN,,8.9704,,,time,mid,-12.0
+Temporal CNN,,4.3112,,,time,mid,-11.0
+Temporal CNN,,7.3356,,,time,mid,-10.0
+Temporal CNN,,5.1808,,,time,mid,-9.0
+Temporal CNN,,10.5204,,,time,mid,-8.0
+Temporal CNN,,4.3564,,,time,mid,-7.0
+Temporal CNN,,8.4893,,,time,mid,-6.0
+Temporal CNN,,6.3034,,,time,mid,-5.0
+Temporal CNN,,10.8092,,,time,mid,-4.0
+Temporal CNN,,6.8234,,,time,mid,-3.0
+Temporal CNN,,11.5983,,,time,mid,-2.0
+Temporal CNN,,7.2008,,,time,mid,-1.0
+Temporal CNN,,13.6596,,,time,mid,0.0
+Transformer,,5.9705,,,time,early,-29.0
+Transformer,,5.6286,,,time,early,-28.0
+Transformer,,5.8981,,,time,early,-27.0
+Transformer,,5.2059,,,time,early,-26.0
+Transformer,,4.5543,,,time,early,-25.0
+Transformer,,4.4561,,,time,early,-24.0
+Transformer,,3.9916,,,time,early,-23.0
+Transformer,,3.9616,,,time,early,-22.0
+Transformer,,3.6271,,,time,early,-21.0
+Transformer,,2.4279,,,time,early,-20.0
+Transformer,,2.8195,,,time,early,-19.0
+Transformer,,2.1956,,,time,early,-18.0
+Transformer,,1.8335,,,time,early,-17.0
+Transformer,,1.8494,,,time,early,-16.0
+Transformer,,1.446,,,time,early,-15.0
+Transformer,,1.4539,,,time,early,-14.0
+Transformer,,1.4384,,,time,early,-13.0
+Transformer,,1.6481,,,time,early,-12.0
+Transformer,,1.4469,,,time,early,-11.0
+Transformer,,1.8477,,,time,early,-10.0
+Transformer,,2.3872,,,time,early,-9.0
+Transformer,,3.2963,,,time,early,-8.0
+Transformer,,3.6952,,,time,early,-7.0
+Transformer,,3.8403,,,time,early,-6.0
+Transformer,,4.1669,,,time,early,-5.0
+Transformer,,4.3899,,,time,early,-4.0
+Transformer,,4.6372,,,time,early,-3.0
+Transformer,,6.0371,,,time,early,-2.0
+Transformer,,6.5249,,,time,early,-1.0
+Transformer,,6.6782,,,time,early,0.0
+Transformer,,10.3559,,,time,late,-29.0
+Transformer,,9.607,,,time,late,-28.0
+Transformer,,7.4516,,,time,late,-27.0
+Transformer,,8.0922,,,time,late,-26.0
+Transformer,,7.515,,,time,late,-25.0
+Transformer,,7.3823,,,time,late,-24.0
+Transformer,,6.2796,,,time,late,-23.0
+Transformer,,5.7299,,,time,late,-22.0
+Transformer,,4.6413,,,time,late,-21.0
+Transformer,,4.6419,,,time,late,-20.0
+Transformer,,3.6497,,,time,late,-19.0
+Transformer,,3.2731,,,time,late,-18.0
+Transformer,,2.8047,,,time,late,-17.0
+Transformer,,2.2038,,,time,late,-16.0
+Transformer,,1.7909,,,time,late,-15.0
+Transformer,,2.1034,,,time,late,-14.0
+Transformer,,2.5703,,,time,late,-13.0
+Transformer,,2.9554,,,time,late,-12.0
+Transformer,,3.185,,,time,late,-11.0
+Transformer,,4.1861,,,time,late,-10.0
+Transformer,,5.4705,,,time,late,-9.0
+Transformer,,7.2317,,,time,late,-8.0
+Transformer,,8.6298,,,time,late,-7.0
+Transformer,,10.5231,,,time,late,-6.0
+Transformer,,12.5857,,,time,late,-5.0
+Transformer,,15.3498,,,time,late,-4.0
+Transformer,,17.695,,,time,late,-3.0
+Transformer,,19.7468,,,time,late,-2.0
+Transformer,,24.3605,,,time,late,-1.0
+Transformer,,25.6891,,,time,late,0.0
+Transformer,,7.9195,,,time,mid,-29.0
+Transformer,,7.1658,,,time,mid,-28.0
+Transformer,,6.2434,,,time,mid,-27.0
+Transformer,,5.9359,,,time,mid,-26.0
+Transformer,,5.9524,,,time,mid,-25.0
+Transformer,,6.1192,,,time,mid,-24.0
+Transformer,,5.7278,,,time,mid,-23.0
+Transformer,,4.9559,,,time,mid,-22.0
+Transformer,,4.8042,,,time,mid,-21.0
+Transformer,,4.5213,,,time,mid,-20.0
+Transformer,,2.7426,,,time,mid,-19.0
+Transformer,,3.2927,,,time,mid,-18.0
+Transformer,,1.9619,,,time,mid,-17.0
+Transformer,,1.8109,,,time,mid,-16.0
+Transformer,,1.4954,,,time,mid,-15.0
+Transformer,,1.4947,,,time,mid,-14.0
+Transformer,,1.564,,,time,mid,-13.0
+Transformer,,1.7984,,,time,mid,-12.0
+Transformer,,1.8042,,,time,mid,-11.0
+Transformer,,2.3316,,,time,mid,-10.0
+Transformer,,3.187,,,time,mid,-9.0
+Transformer,,3.7347,,,time,mid,-8.0
+Transformer,,4.5592,,,time,mid,-7.0
+Transformer,,5.285,,,time,mid,-6.0
+Transformer,,6.0393,,,time,mid,-5.0
+Transformer,,6.3324,,,time,mid,-4.0
+Transformer,,7.7426,,,time,mid,-3.0
+Transformer,,9.2448,,,time,mid,-2.0
+Transformer,,10.0736,,,time,mid,-1.0
+Transformer,,11.538,,,time,mid,0.0
