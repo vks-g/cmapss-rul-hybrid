@@ -15,6 +15,10 @@ Phase 2 as planned and lacks its training commands; issue
 gap. Merge that update before the final release check in
 [#83](https://github.com/vks-g/cmapss-rul-hybrid/issues/83).
 
+> **Update, 15 November 2026:** PR #121 merged the Phase 2 README and diagrams
+> into `dev` after this check, so the gap above is closed. The rest of this record
+> describes `e27db92` as checked.
+
 ## Environment
 
 | Component | Tested version |
