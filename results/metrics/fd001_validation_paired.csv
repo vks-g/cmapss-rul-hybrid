@@ -1,0 +1,13 @@
+comparison,stage,engines,A RMSE,B RMSE,difference,CI low,CI high,A mean error,B mean error
+Hybrid A (gated) vs LSTM,all,100,15.401,15.945,-0.544,-3.35,2.24,1.015,2.653
+Hybrid A (gated) vs LSTM,late,33,5.08,5.495,-0.415,-1.995,1.223,2.649,2.086
+Hybrid A (gated) vs LSTM,mid,34,20.566,21.381,-0.815,-6.341,4.405,7.42,12.88
+Hybrid A (gated) vs LSTM,early,33,16.014,16.385,-0.371,-4.023,3.64,-7.218,-7.318
+Hybrid B (two-stage) vs XGBoost (engineered),all,100,15.18,15.706,-0.526,-1.453,0.377,-0.782,-0.059
+Hybrid B (two-stage) vs XGBoost (engineered),late,33,6.161,6.265,-0.104,-2.795,2.39,0.02,1.361
+Hybrid B (two-stage) vs XGBoost (engineered),mid,34,16.526,18.22,-1.694,-3.246,-0.251,6.358,7.261
+Hybrid B (two-stage) vs XGBoost (engineered),early,33,19.38,19.137,0.244,-1.185,1.525,-8.941,-9.021
+Transformer vs XGBoost (engineered),all,100,15.601,15.706,-0.105,-2.425,2.256,2.854,-0.059
+Transformer vs XGBoost (engineered),late,33,6.439,6.265,0.173,-1.385,2.052,1.885,1.361
+Transformer vs XGBoost (engineered),mid,34,21.061,18.22,2.841,-1.659,7.459,12.114,7.261
+Transformer vs XGBoost (engineered),early,33,15.42,19.137,-3.717,-6.608,-0.75,-5.717,-9.021

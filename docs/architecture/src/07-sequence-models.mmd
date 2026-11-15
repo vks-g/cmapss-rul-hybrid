@@ -1,26 +1,26 @@
-%% Phase 2 sequence models (planned). Details such as window length are tuned in Phase 2.
+%% Implemented Phase 2 sequence encoders and shared trainer.
 flowchart TB
-    NORM["Regime-normalized sensors<br/>fitted on training engines"]:::fit
-    WIN["Fixed-length windows<br/>inside one engine<br/>label = RUL at last cycle"]:::planned
-
-    subgraph NET["One network per encoder, trained by the shared trainer (seeding · early stopping · checkpoints)"]
-        LSTM["LSTM"]:::planned
-        TCN["Temporal CNN"]:::planned
-        TRF["Transformer encoder"]:::planned
-        HEAD["Regression head"]:::planned
+    NORM["WindowPreprocessor<br/>training-fitted sensor selection<br/>and regime normalization"]:::fit
+    WIN["make_windows · window 30<br/>inside each engine; left-pad short histories<br/>target at last cycle; cap 125 / uncapped"]:::data
+    subgraph NET["SequenceEncoder → SequenceRegressor"]
+        LSTM["LSTMEncoder<br/>1 layer · 64 hidden<br/>dropout 0.3"]:::model
+        TCN["TCNEncoder<br/>32 channels · kernel 3<br/>4 dilation levels · dropout 0.1"]:::model
+        TRF["TransformerEncoder<br/>d_model 32 · 4 heads · 1 layer<br/>mean pooling · dropout 0.1"]:::model
+        HEAD["RegressionHead<br/>one RUL prediction"]:::model
         LSTM --> HEAD
         TCN --> HEAD
         TRF --> HEAD
     end
-
-    EVAL["Same folds and metrics<br/>as Phase 1; each test<br/>engine scored once,<br/>on its last window"]:::output
-
+    TRAIN["Shared trainer and engine-grouped CV<br/>seeded batches · Adam · cosine schedule<br/>gradient clipping · inner-holdout early stopping"]:::fit
+    EVAL["Frozen final comparison<br/>last-cycle score on true uncapped RUL<br/>five seeds · RMSE / MAE / NASA score"]:::output
     NORM --> WIN
     WIN --> LSTM
     WIN --> TCN
     WIN --> TRF
-    HEAD -- RUL --> EVAL
+    TRAIN -. fits .-> NET
+    HEAD --> EVAL
 
+    classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
     classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
     classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
-    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e

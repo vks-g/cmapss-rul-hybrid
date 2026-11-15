@@ -1,0 +1,119 @@
+{
+  "issue": 72,
+  "data": "official FD001 test, last cycle per engine, cap 125 (#71)",
+  "pairings_from": "cross-validation: fd001_cv_*.json, fd001_ml_capped_cv.json, fd001_hybrid_value_test.json",
+  "holm_family": [
+    "Hybrid A (gated) vs LSTM",
+    "Hybrid B (two-stage) vs XGBoost (engineered)",
+    "Transformer vs XGBoost (engineered)"
+  ],
+  "comparisons": {
+    "Hybrid A (gated) vs LSTM": [
+      "Hybrid A (gated)",
+      "LSTM"
+    ],
+    "Hybrid B (two-stage) vs XGBoost (engineered)": [
+      "Hybrid B (two-stage)",
+      "XGBoost (engineered)"
+    ],
+    "Transformer vs XGBoost (engineered)": [
+      "Transformer",
+      "XGBoost (engineered)"
+    ]
+  },
+  "verdicts": {
+    "Hybrid A (gated) vs LSTM": {
+      "adds_value": false,
+      "criteria": {
+        "bootstrap_ci_below_zero": false,
+        "wilcoxon_holm": false,
+        "lower_seed_variance": false
+      },
+      "evidence": {
+        "rmse_difference": {
+          "difference": -0.5442418175310966,
+          "low": -3.349530865453287,
+          "high": 2.2397206254341007,
+          "excludes_zero": false
+        },
+        "wilcoxon": {
+          "statistic": 2341.0,
+          "p": 0.5269610710548687,
+          "median_abs_error_a": 8.902609914541246,
+          "median_abs_error_b": 8.926815092563633,
+          "p_holm": 1.0
+        },
+        "rmse_hybrid": {
+          "mean": 15.400790452808371,
+          "std": 0.459243702101525
+        },
+        "rmse_branch": {
+          "mean": 15.945032270339468,
+          "std": 0.3343849965212627
+        }
+      }
+    },
+    "Hybrid B (two-stage) vs XGBoost (engineered)": {
+      "adds_value": false,
+      "criteria": {
+        "bootstrap_ci_below_zero": false,
+        "wilcoxon_holm": false,
+        "lower_seed_variance": false
+      },
+      "evidence": {
+        "rmse_difference": {
+          "difference": -0.5257530169955018,
+          "low": -1.4526775135734231,
+          "high": 0.3771359251862305,
+          "excludes_zero": false
+        },
+        "wilcoxon": {
+          "statistic": 2430.0,
+          "p": 0.7439395352842529,
+          "median_abs_error_a": 7.806169891357424,
+          "median_abs_error_b": 8.0455904006958,
+          "p_holm": 1.0
+        },
+        "rmse_hybrid": {
+          "mean": 15.180219012925965,
+          "std": 0.5469454668641378
+        },
+        "rmse_branch": {
+          "mean": 15.705972029921467,
+          "std": null
+        }
+      }
+    },
+    "Transformer vs XGBoost (engineered)": {
+      "adds_value": false,
+      "criteria": {
+        "bootstrap_ci_below_zero": false,
+        "wilcoxon_holm": false,
+        "lower_seed_variance": false
+      },
+      "evidence": {
+        "rmse_difference": {
+          "difference": -0.10521751617844899,
+          "low": -2.424712682308005,
+          "high": 2.255917652789595,
+          "excludes_zero": false
+        },
+        "wilcoxon": {
+          "statistic": 2389.0,
+          "p": 0.6400619540504373,
+          "median_abs_error_a": 8.458335548639297,
+          "median_abs_error_b": 8.0455904006958,
+          "p_holm": 1.0
+        },
+        "rmse_hybrid": {
+          "mean": 15.600754513743018,
+          "std": 0.3520516175529418
+        },
+        "rmse_branch": {
+          "mean": 15.705972029921467,
+          "std": null
+        }
+      }
+    }
+  }
+}

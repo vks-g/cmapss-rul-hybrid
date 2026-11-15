@@ -1,0 +1,9 @@
+variant,group,selection mean,early mean,mid mean,late mean,selection std,early std,mid std,late std
+window_15,window,16.623,19.479,20.069,9.575,0.118,0.275,0.246,0.326
+window_30,window,16.604,19.392,20.057,9.617,0.238,0.304,0.475,0.335
+window_60,window,16.677,19.542,20.216,9.441,0.088,0.111,0.162,0.236
+window_90,window,16.665,19.484,20.201,9.483,0.13,0.292,0.253,0.185
+branch_sequence,branches,16.898,15.884,21.692,11.095,0.977,1.133,0.78,1.429
+branch_features,branches,17.399,20.084,21.291,9.789,0.232,0.284,0.343,0.368
+branch_concat,branches,16.912,19.701,20.573,9.548,0.108,0.572,0.365,0.403
+branch_gated,branches,16.604,19.392,20.057,9.617,0.238,0.304,0.475,0.335

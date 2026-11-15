@@ -1,0 +1,23 @@
+family,model,target,seeds,rmse,rmse std,mae,mae std,nasa_score,nasa_score std,late_rmse,late_rmse std,mid_rmse,mid_rmse std,early_rmse,early_rmse std
+sequence,LSTM,cap125,5,15.945,0.334,11.962,0.292,498.82,38.515,5.495,0.557,21.381,0.387,16.385,0.915
+sequence,Temporal CNN,cap125,5,15.833,0.547,12.103,0.546,413.949,65.809,7.584,1.712,19.284,1.321,17.728,1.432
+sequence,Transformer,cap125,5,15.601,0.352,11.907,0.538,442.612,48.552,6.439,0.72,21.061,0.766,15.42,0.928
+hybrid,Hybrid A (gated),cap125,5,15.401,0.459,11.892,0.547,487.666,116.231,5.08,0.711,20.566,0.793,16.014,0.591
+hybrid,Hybrid B (two-stage),cap125,5,15.18,0.547,11.279,0.788,355.909,21.837,6.161,1.983,16.526,0.991,19.38,0.41
+"ML, engineered",Random Forest (engineered),cap125,1,16.206,,11.947,,411.672,,7.392,,18.145,,20.05,
+"ML, engineered",XGBoost (engineered),cap125,1,15.706,,11.588,,388.524,,6.265,,18.22,,19.137,
+"ML, engineered",Elastic Net (engineered),cap125,1,17.8,,14.832,,481.429,,17.513,,15.931,,19.796,
+"ML, raw",Random Forest (raw),cap125,1,18.424,,13.749,,578.245,,14.128,,17.541,,22.628,
+"ML, raw",XGBoost (raw),cap125,1,17.576,,12.782,,574.875,,13.626,,17.59,,20.777,
+"ML, raw",Elastic Net (raw),cap125,1,22.444,,17.756,,1268.878,,23.677,,18.083,,25.08,
+sequence,LSTM,uncapped,5,28.974,4.983,19.43,2.524,2484887.224,5356667.405,6.03,0.292,35.51,7.943,34.636,4.596
+sequence,Temporal CNN,uncapped,5,29.85,3.524,21.511,2.878,88118.043,121234.68,9.031,1.605,34.858,4.817,36.767,5.447
+sequence,Transformer,uncapped,5,30.301,4.149,22.471,3.457,24119.289,14855.187,10.302,1.755,36.732,5.465,35.815,4.744
+hybrid,Hybrid A (gated),uncapped,5,27.524,1.104,19.748,1.024,88397.851,86048.204,9.288,0.638,27.437,1.445,37.853,1.529
+hybrid,Hybrid B (two-stage),uncapped,5,25.865,1.07,17.706,0.625,11823.45,7028.771,7.548,0.596,25.626,1.716,35.946,1.424
+"ML, engineered",Random Forest (engineered),uncapped,1,27.547,,17.665,,145409.771,,7.517,,25.76,,39.489,
+"ML, engineered",XGBoost (engineered),uncapped,1,28.562,,18.956,,52991.982,,5.39,,28.237,,40.269,
+"ML, engineered",Elastic Net (engineered),uncapped,1,28.391,,23.574,,7776.723,,24.781,,32.598,,27.086,
+"ML, raw",Random Forest (raw),uncapped,1,26.154,,19.215,,8414.498,,13.505,,27.943,,32.954,
+"ML, raw",XGBoost (raw),uncapped,1,24.827,,18.09,,5124.982,,13.992,,26.948,,30.393,
+"ML, raw",Elastic Net (raw),uncapped,1,29.645,,24.437,,6239.139,,30.126,,31.57,,26.993,
