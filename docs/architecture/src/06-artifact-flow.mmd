@@ -1,30 +1,38 @@
-%% Which scripts and notebooks read and write which files.
+%% Phase 1 and Phase 2 artifact producers and consumers.
 flowchart TB
-    DLS["scripts/<br/>download_data.py"]
-    RAW[("data/raw/CMAPSSData/<br/>12 dataset files<br/>(gitignored)")]:::data
-
-    subgraph NB["notebooks/phase1 (run in order)"]
-        N1["01_eda<br/>lifetimes · flat sensors<br/>regimes · trends"]
-        N2["02_feature_engineering<br/>feature matrices"]
-        N3["03_ml_models<br/>raw vs engineered CV<br/>SHAP explanations"]
-        N4["04_ml_results<br/>official FD001 test"]
-        N1 --> N2 --> N3 --> N4
-    end
-
-    CAP["scripts/<br/>capped_rul_ablation.py"]
-    PROC[("data/processed/<br/>FD001 matrices + manifest<br/>(gitignored)")]:::data
-    MET[("results/metrics/<br/>fd001_test.json<br/>fd001_test_capped125.json<br/>per-engine predictions")]:::output
-    FIG[("results/figures/<br/>fd001_test_*.png")]:::output
-    DOCS["reports/phase1/main.pdf<br/>presentations/phase1.pdf"]:::output
-
-    DLS --> RAW
-    RAW --> N1
-    N2 --> PROC
-    N4 --> MET
-    N4 --> FIG
-    RAW --> CAP --> MET
+    DL["scripts/download_data.py"]
+    RAW[("data/raw/CMAPSSData/<br/>12 files; gitignored")]:::data
+    P1["notebooks/phase1/01–04<br/>EDA → features → ML → results"]
+    CFG["configs/*.yaml<br/>shared defaults + model settings"]:::data
+    CV["scripts/train_dl.py<br/>scripts/run_ml_baselines.py<br/>training-engine CV; optional DL refit"]:::fit
+    STUDY["notebooks/phase2/05–12<br/>cap → encoders → hybrids<br/>regularization · ablations · multi-regime"]
+    FINAL["15_final_comparison.ipynb<br/>freeze fff9e06<br/>one official test run; reload when saved"]
+    ANALYSIS["13_validation.ipynb<br/>14_interpretability.ipynb<br/>read saved predictions / checkpoints"]
+    MET[("results/metrics/<br/>CV scores and predictions<br/>final_test.json + predictions.csv<br/>final_comparison.csv")]:::output
+    FIG[("results/figures/<br/>learning curves · comparisons<br/>uncertainty · explanations")]:::output
+    CKPT[("results/models/<br/>checkpoints; gitignored")]:::data
+    DOCS["reports/phase1/ and phase2/<br/>presentations/"]:::output
+    DL --> RAW
+    RAW --> P1
+    RAW --> CV
+    CFG --> CV
+    CV --> MET
+    CV --> CKPT
+    RAW --> STUDY --> MET
+    STUDY --> FIG
+    MET -- frozen settings --> FINAL
+    RAW --> FINAL
+    FINAL --> MET
+    FINAL --> CKPT
+    FINAL --> FIG
+    MET --> ANALYSIS
+    CKPT --> ANALYSIS --> FIG
+    P1 --> MET
+    P1 --> FIG
     MET --> DOCS
     FIG --> DOCS
 
     classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
     classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b

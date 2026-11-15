@@ -5,7 +5,7 @@ config:
 flowchart LR
 %% Internal imports of the rul package. An arrow A --> B means "A imports B".
 %% Color = subpackage: blue rul.data, orange rul.features, green rul.models,
-%% amber rul.evaluation. Phase 2 modules (windows, trainer, sequence models) are not built yet.
+%% amber rul.evaluation. Phase 2 includes windows, shared training and both hybrid models.
     EXP["models/experiment.py<br/>EngineFeatures<br/>make_comparison_models"]:::models
     OFF["evaluation/official.py<br/>predict_test_cycles<br/>score_last_cycle"]:::evaluation
     MAT["features/matrix.py<br/>build_feature_matrices"]:::features
@@ -26,6 +26,7 @@ flowchart LR
     EXP --> REG
     EXP --> ROL
     EXP --> LOAD
+    MAT --> EXP
     MAT --> CLN
     MAT --> REG
     MAT --> ROL
@@ -38,6 +39,41 @@ flowchart LR
     CLN --> LOAD
     REG --> LOAD
     ROL --> LOAD
+
+    WIN["features/windows.py<br/>WindowPreprocessor · make_windows"]:::features
+    BASE["models/base.py<br/>SequenceEncoder · SequenceRegressor"]:::models
+    SEQ["models/lstm.py · tcn.py<br/>transformer.py"]:::models
+    HY["models/hybrid.py<br/>GatedHybrid · TwoStageHybrid"]:::models
+    REGISTRY["models/registry.py<br/>build_encoder · build_model"]:::models
+    INPUT["training/inputs.py<br/>WindowInputs · HybridInputs"]:::features
+    CONF["training/config.py<br/>load_config · run_cv · run_refit"]:::models
+    RUN["training/runs.py<br/>CV · refit · TrainedModel"]:::models
+    TRN["training/trainer.py<br/>fit · predict · TrainConfig"]:::models
+    TARGET["data/target.py<br/>cap choice · selection_rmse"]:::data
+    VALID["evaluation/validation.py<br/>bootstrap · paired tests · value_test"]:::evaluation
+    WIN --> CLN
+    WIN --> REG
+    INPUT --> WIN
+    INPUT --> MAT
+    SEQ --> BASE
+    HY --> BASE
+    HY --> REGISTRY
+    HY --> RUN
+    HY --> MAT
+    REGISTRY --> BASE
+    CONF --> REGISTRY
+    CONF --> INPUT
+    CONF --> RUN
+    RUN --> INPUT
+    RUN --> TRN
+    RUN --> SPL
+    RUN --> LAB
+    RUN --> MET
+    RUN --> OFF
+    TARGET --> LOAD
+    TARGET --> CLN
+    TARGET --> MET
+    VALID --> MET
 
     classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
     classDef features fill:#fdeee7,stroke:#eb6834,color:#0b0b0b

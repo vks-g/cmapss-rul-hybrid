@@ -1,21 +1,31 @@
-%% Hybrid fusion model (planned): a sequence branch and an engineered-feature branch
-%% share one regression head.
+%% Implemented hybrids in src/rul/models/hybrid.py.
 flowchart TB
-    subgraph INPUT["Inputs at cycle t of one engine"]
-        WIN["Sensor window<br/>cycles t − w + 1 … t"]:::data
-        FEAT["Engineered features at t<br/>Phase 1 pipeline"]:::data
+    WIN["Sensor window at cycle t<br/>30 cycles within one engine"]:::data
+    FEAT["HybridFeatures at cycle t<br/>training-fitted engineered inputs<br/>aligned by unit and cycle"]:::fit
+    subgraph A["Hybrid A · GatedHybrid · joint network training"]
+        SEQ["LSTMEncoder<br/>64-dimensional embedding"]:::model
+        MLP["Feature MLP<br/>hidden 32 → embedding 64"]:::model
+        GATE["g = sigmoid of concatenated embeddings<br/>z = g × h_seq + (1 − g) × h_feat"]:::model
+        HEAD["RegressionHead → RUL"]:::output
+        SEQ --> GATE
+        MLP --> GATE --> HEAD
     end
-
-    ENC["Sequence encoder<br/>LSTM / TCN / Transformer"]:::planned
-    MLP["MLP branch"]:::planned
-    CAT["Concatenate<br/>the two embeddings"]:::planned
-    HEAD["Fusion regression head"]:::planned
-    Y(["Predicted RUL at t"]):::output
-
-    WIN --> ENC --> CAT
-    FEAT --> MLP --> CAT
-    CAT --> HEAD --> Y
+    subgraph B["Hybrid B · TwoStageHybrid"]
+        OOF["Training: cross-fit LSTM embeddings<br/>3 inner engine groups<br/>each engine unseen by its encoder"]:::fit
+        JOIN["Concatenate engineered features<br/>and encoder embeddings"]:::model
+        XGB["XGBoost → RUL"]:::output
+        PRED["Prediction: one encoder refit<br/>on all training engines"]:::fit
+        OOF -- training embeddings --> JOIN
+        PRED -- new-engine embeddings --> JOIN
+        JOIN --> XGB
+    end
+    WIN --> SEQ
+    FEAT --> MLP
+    WIN --> OOF
+    WIN --> PRED
+    FEAT --> JOIN
 
     classDef data fill:#e9f1fb,stroke:#2a78d6,color:#0b0b0b
+    classDef fit fill:#fdeee7,stroke:#eb6834,color:#0b0b0b
+    classDef model fill:#e6f6ef,stroke:#1baf7a,color:#0b0b0b
     classDef output fill:#fdf5e1,stroke:#eda100,color:#0b0b0b
-    classDef planned fill:#f4f4f2,stroke:#898781,stroke-dasharray:5 4,color:#52514e
