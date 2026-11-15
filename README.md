@@ -4,7 +4,7 @@
 
 **Remaining Useful Life prediction for turbofan engines on NASA C-MAPSS**
 
-Engineered-feature machine learning (Phase 1) compared with sequence deep learning (Phase 2), plus a hybrid of the two.
+Engineered-feature machine learning (Phase 1) compared with sequence deep learning (Phase 2), plus two hybrids that combine them.
 
 [![Phase 1: complete](https://img.shields.io/badge/Phase_1-ML_baselines_complete-1baf7a)](#results)
 [![Phase 2: complete](https://img.shields.io/badge/Phase_2-sequence_models_and_hybrids_complete-1baf7a)](#results)
@@ -12,9 +12,10 @@ Engineered-feature machine learning (Phase 1) compared with sequence deep learni
 [![scikit-learn](https://img.shields.io/badge/scikit--learn-%E2%89%A51.6-eb6834?logo=scikitlearn&logoColor=white)](requirements.txt)
 [![XGBoost](https://img.shields.io/badge/XGBoost-%E2%89%A52.0-2a78d6)](requirements.txt)
 [![PyTorch](https://img.shields.io/badge/PyTorch-%E2%89%A52.6-ee4c2c?logo=pytorch&logoColor=white)](requirements.txt)
-[![Tests: pytest](https://img.shields.io/badge/tests-pytest-0a9edc?logo=pytest&logoColor=white)](tests/)
+[![Tests](https://github.com/vks-g/cmapss-rul-hybrid/actions/workflows/tests.yml/badge.svg?event=pull_request)](https://github.com/vks-g/cmapss-rul-hybrid/actions/workflows/tests.yml)
 [![Dataset: NASA C-MAPSS](https://img.shields.io/badge/dataset-NASA_C--MAPSS-0b3d91)](data/README.md)
 [![Report: IEEE PDF](https://img.shields.io/badge/report-IEEE_PDF-eda100?logo=latex&logoColor=white)](reports/phase2/main.pdf)
+[![Release: v2.0-phase2](https://img.shields.io/badge/release-v2.0--phase2-1baf7a)](https://github.com/vks-g/cmapss-rul-hybrid/tree/v2.0-phase2)
 
 [Phase 2 report](reports/phase2/main.pdf) · [Phase 2 slides](presentations/phase2.pdf) · [Phase 1 report](reports/phase1/main.pdf) · [Phase 1 slides](presentations/phase1.pdf) · [Final comparison](notebooks/phase2/15_final_comparison.ipynb) · [Architecture diagrams](docs/architecture/README.md) · [Contributing](CONTRIBUTING.md)
 
@@ -27,7 +28,7 @@ Each engine in C-MAPSS is a multivariate time series of 3 operating settings and
 Fixed rolling-window features may miss long degradation trajectories and interactions whose timing differs across engines. This project tests whether sequence models close that gap. The full brief is in [`docs/project_brief.md`](docs/project_brief.md).
 
 > [!NOTE]
-> **Phase 2 result.** With training RUL capped at 125, the Transformer scores 15.60 ± 0.35 RMSE cycles and engineered-feature XGBoost scores 15.71 on the 100 official FD001 test engines. Hybrid B scores 15.18 ± 0.55, but the predefined paired comparisons do not establish an improvement over its feature branch. See [Results](#results), the [final comparison](notebooks/phase2/15_final_comparison.ipynb), and the [uncertainty analysis](notebooks/phase2/13_validation.ipynb).
+> **Phase 2 result.** On the 100 official FD001 test engines, with training RUL capped at 125, the three sequence encoders, both hybrids and XGBoost on engineered features all score between 15.18 and 15.95 RMSE. The two-stage hybrid has the lowest error (15.18 ± 0.55 cycles), but the paired tests fixed in advance do not separate it from XGBoost on the same features, so the leading models tie. The training target matters more than the model: without the cap, every model is 7 to 15 cycles worse. See [Results](#results), the [final comparison](notebooks/phase2/15_final_comparison.ipynb) and the [uncertainty analysis](notebooks/phase2/13_validation.ipynb).
 
 ## Approach
 
@@ -101,21 +102,21 @@ FD001 official test: **100 engines**, one prediction at each engine’s last rec
 
 | Model | RMSE (cap / uncapped) | MAE (cap / uncapped) | NASA score (cap / uncapped) |
 |---|---:|---:|---:|
-| LSTM | 15.95 ± 0.33 / 28.97 ± 4.98 | 11.96 ± 0.29 / 19.43 ± 2.52 | 498.82 ± 38.51 / 2,484,887.22 ± 5,356,667.40 |
-| Temporal CNN | 15.83 ± 0.55 / 29.85 ± 3.52 | 12.10 ± 0.55 / 21.51 ± 2.88 | 413.95 ± 65.81 / 88,118.04 ± 121,234.68 |
-| Transformer | 15.60 ± 0.35 / 30.30 ± 4.15 | 11.91 ± 0.54 / 22.47 ± 3.46 | 442.61 ± 48.55 / 24,119.29 ± 14,855.19 |
-| Hybrid A (gated) | 15.40 ± 0.46 / 27.52 ± 1.10 | 11.89 ± 0.55 / 19.75 ± 1.02 | 487.67 ± 116.23 / 88,397.85 ± 86,048.20 |
-| Hybrid B (two-stage) | 15.18 ± 0.55 / 25.86 ± 1.07 | 11.28 ± 0.79 / 17.71 ± 0.62 | 355.91 ± 21.84 / 11,823.45 ± 7,028.77 |
-| Random Forest (engineered) | 16.21 / 27.55 | 11.95 / 17.67 | 411.67 / 145,409.77 |
-| XGBoost (engineered) | 15.71 / 28.56 | 11.59 / 18.96 | 388.52 / 52,991.98 |
-| Elastic Net (engineered) | 17.80 / 28.39 | 14.83 / 23.57 | 481.43 / 7,776.72 |
-| Random Forest (raw) | 18.42 / 26.15 | 13.75 / 19.22 | 578.24 / 8,414.50 |
-| XGBoost (raw) | 17.58 / 24.83 | 12.78 / 18.09 | 574.88 / 5,124.98 |
-| Elastic Net (raw) | 22.44 / 29.64 | 17.76 / 24.44 | 1,268.88 / 6,239.14 |
+| LSTM | 15.95 ± 0.33 / 28.97 ± 4.98 | 11.96 ± 0.29 / 19.43 ± 2.52 | 499 ± 39 / 2,484,887 ± 5,356,667 |
+| Temporal CNN | 15.83 ± 0.55 / 29.85 ± 3.52 | 12.10 ± 0.55 / 21.51 ± 2.88 | 414 ± 66 / 88,118 ± 121,235 |
+| Transformer | 15.60 ± 0.35 / 30.30 ± 4.15 | 11.91 ± 0.54 / 22.47 ± 3.46 | 443 ± 49 / 24,119 ± 14,855 |
+| Hybrid A (gated) | 15.40 ± 0.46 / 27.52 ± 1.10 | 11.89 ± 0.55 / 19.75 ± 1.02 | 488 ± 116 / 88,398 ± 86,048 |
+| Hybrid B (two-stage) | 15.18 ± 0.55 / 25.86 ± 1.07 | 11.28 ± 0.79 / 17.71 ± 0.62 | 356 ± 22 / 11,823 ± 7,029 |
+| Random Forest (engineered) | 16.21 / 27.55 | 11.95 / 17.67 | 412 / 145,410 |
+| XGBoost (engineered) | 15.71 / 28.56 | 11.59 / 18.96 | 389 / 52,992 |
+| Elastic Net (engineered) | 17.80 / 28.39 | 14.83 / 23.57 | 481 / 7,777 |
+| Random Forest (raw) | 18.42 / 26.15 | 13.75 / 19.22 | 578 / 8,414 |
+| XGBoost (raw) | 17.58 / 24.83 | 12.78 / 18.09 | 575 / 5,125 |
+| Elastic Net (raw) | 22.44 / 29.64 | 17.76 / 24.44 | 1,269 / 6,239 |
 
-Values are rounded from the full-precision saved metrics. Summary: [`fd001_final_comparison.csv`](results/metrics/fd001_final_comparison.csv), produced by [notebook 15](notebooks/phase2/15_final_comparison.ipynb) at model freeze `fff9e06`. The [saved metrics](results/metrics/fd001_final_test.json) and [per-engine predictions](results/metrics/fd001_final_test_predictions.csv) record all network seeds; [ML metrics](results/metrics/fd001_ml_capped_test.json) and [ML predictions](results/metrics/fd001_ml_capped_test_predictions.csv) record both feature sets. These final ML runs use the Phase 2 selection rule and expanded XGBoost grid; the historical Phase 1 numbers remain in the [Phase 1 report](reports/phase1/main.pdf).
+Values are rounded from the full-precision saved metrics. Summary: [`fd001_final_comparison.csv`](results/metrics/fd001_final_comparison.csv), produced by [notebook 15](notebooks/phase2/15_final_comparison.ipynb) at model freeze `fff9e06`. The [saved metrics](results/metrics/fd001_final_test.json) and [per-engine predictions](results/metrics/fd001_final_test_predictions.csv) record all network seeds; [ML metrics](results/metrics/fd001_ml_capped_test.json) and [ML predictions](results/metrics/fd001_ml_capped_test_predictions.csv) record both feature sets. These final ML runs use the Phase 2 selection rule and an XGBoost grid that also tunes the learning rate; the historical Phase 1 numbers remain in the [Phase 1 report](reports/phase1/main.pdf).
 
-**Interpretation.** Capping the training target makes a larger difference than choosing among the leading model families. The [validation notebook](notebooks/phase2/13_validation.ipynb) finds no clear overall difference for Transformer versus engineered XGBoost, Hybrid A versus LSTM, or Hybrid B versus engineered XGBoost. The small differences in test means do not establish a winning model. Stage-wise RMSE (late ≤ 50, mid ≤ 100, early > 100) is in the comparison CSV; bootstrap intervals and paired tests are in the validation notebook.
+**Interpretation.** Capping the training target makes a larger difference than choosing among the leading model families: the six leading capped models lie within 0.8 cycles of each other, while uncapped training is 7 to 15 cycles worse for every model. The [validation notebook](notebooks/phase2/13_validation.ipynb) finds no clear overall difference for Transformer versus engineered XGBoost, Hybrid A versus LSTM, or Hybrid B versus engineered XGBoost. The small differences in test means do not establish a winning model. Stage-wise RMSE (late ≤ 50, mid ≤ 100, early > 100) is in the comparison CSV; bootstrap intervals and paired tests are in the validation notebook.
 
 <p align="center">
   <img src="results/figures/fd001_final_comparison.png" width="720" alt="Final FD001 comparison of cap-125 and uncapped training across sequence, hybrid and ML models">
@@ -125,10 +126,10 @@ The [multi-regime study](notebooks/phase2/12_multi_regime.ipynb) extends the LST
 
 ## Setup & reproduce
 
-Use Python **3.10 or newer**. Clone `dev`, which contains both phases, then create and activate a virtual environment:
+Use Python **3.10 or newer**. Clone the repository (`main` holds the Phase 2 release, tagged `v2.0-phase2`), then create and activate a virtual environment:
 
 ```sh
-git clone --branch dev https://github.com/vks-g/cmapss-rul-hybrid.git
+git clone https://github.com/vks-g/cmapss-rul-hybrid.git
 cd cmapss-rul-hybrid
 python3 -m venv .venv
 source .venv/bin/activate
@@ -149,9 +150,6 @@ In Windows PowerShell 5.1, run the two `pip install` commands separately,
 continuing only after the first succeeds (`&&` requires PowerShell 7 or newer).
 
 The editable install makes `import rul` work in notebooks and tests.
-
-The [Phase 2 clean-clone check](docs/clean-clone-check.md) records the tested
-environment, full-suite result, CV/refit command and notebook-output checks.
 
 The requirements include PyTorch (`torch>=2.6`) for the Phase 2 sequence models.
 CPU is enough for FD001; a GPU is optional. For a GPU-specific build, follow the
@@ -225,6 +223,10 @@ in notebook 13 consumes those saved predictions, so a fresh run without them mus
 produce notebook 15's final artifacts before notebook 13. Preserve the frozen
 settings and the saved official results when reproducing the analysis.
 
+The [clean-clone check](docs/clean-clone-check.md) records a full run of these
+steps from a fresh clone: the tested environment, the test suite, an LSTM CV and
+refit, and the saved notebook outputs.
+
 ## Repository structure
 
 ```
@@ -233,22 +235,22 @@ settings and the saved official results when reproducing the analysis.
 ├── docs/
 │   ├── architecture/     system, package, protocol and model diagrams
 │   ├── project_brief.md  the project brief
-│   └── *.md              notes on rolling features and the ML runs
+│   └── *.md              notes on rolling features, the ML runs and the clean-clone check
 ├── notebooks/
 │   ├── phase1/           01 EDA → 02 features → 03 ML models → 04 official results
 │   └── phase2/           05 cap → models / hybrids → studies → 15 final comparison
-├── presentations/        phase slide decks
+├── presentations/        Phase 1 and Phase 2 slide decks (PDF)
 ├── reports/              phase1/ and phase2/ IEEE reports: sections, tables, refs and PDF
 ├── results/
-│   ├── figures/          EDA and test-set figures
-│   └── metrics/          test metrics (JSON) and per-engine predictions (CSV)
+│   ├── figures/          EDA, model-study and test-set figures
+│   └── metrics/          CV records, test metrics (JSON) and per-engine predictions (CSV)
 ├── scripts/              data download, CV training, cap / ablation runs, report tables
 ├── src/rul/              shared Python package
-│   ├── data/             loading, RUL labels, engine-level splits
-│   ├── features/         sensor selection, regimes, rolling features, feature matrices
+│   ├── data/             loading, RUL labels, the training-only cap rule, engine-level splits
+│   ├── features/         sensor selection, regimes, rolling features, sequence windows, feature matrices
 │   ├── models/           ML pipelines, LSTM, TCN, Transformer, gated and two-stage hybrids
 │   ├── training/         config / inputs, engine-safe CV, early stopping and refit
-│   └── evaluation/       metrics, official test scoring, plots
+│   └── evaluation/       metrics, official test scoring, bootstrap and paired tests, plots
 └── tests/                pytest suite for the package and scripts
 ```
 
@@ -272,3 +274,8 @@ Branches, commit messages and review rules are in [`CONTRIBUTING.md`](CONTRIBUTI
 
 - A. Saxena, K. Goebel, D. Simon, and N. Eklund, "Damage Propagation Modeling for Aircraft Engine Run-to-Failure Simulation," *PHM08*, 2008.
 - S. Hochreiter and J. Schmidhuber, "Long Short-Term Memory," *Neural Computation*, 1997.
+- S. Bai, J. Z. Kolter, and V. Koltun, "An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence Modeling," arXiv:1803.01271, 2018 (preprint).
+- A. Vaswani *et al.*, "Attention Is All You Need," *NeurIPS*, 2017.
+- T. Chen and C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
+
+The full reference lists are in the [Phase 1](reports/phase1/refs.bib) and [Phase 2](reports/phase2/refs.bib) reports.
