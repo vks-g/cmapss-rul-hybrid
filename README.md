@@ -150,6 +150,9 @@ continuing only after the first succeeds (`&&` requires PowerShell 7 or newer).
 
 The editable install makes `import rul` work in notebooks and tests.
 
+The [Phase 2 clean-clone check](docs/clean-clone-check.md) records the tested
+environment, full-suite result, CV/refit command and notebook-output checks.
+
 The requirements include PyTorch (`torch>=2.6`) for the Phase 2 sequence models.
 CPU is enough for FD001; a GPU is optional. For a GPU-specific build, follow the
 [official PyTorch installation instructions](https://pytorch.org/get-started/locally/).
