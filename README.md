@@ -190,22 +190,22 @@ Run from the repository root with the environment above active. The configs inhe
 `configs/dl_base.yaml`: cap 125, window 30, three engine-grouped folds, CPU and
 seed 42. These commands run training-engine cross-validation only; they do not
 score the official test. `--refit` additionally saves a checkpoint under the
-gitignored `results/models/`.
+gitignored `results/models/`. CV output below goes to gitignored `build/reproduce/`
+so the committed tuning records remain available for the freeze check.
 
 ```sh
-python scripts/train_dl.py --config configs/lstm.yaml
-python scripts/train_dl.py --config configs/tcn.yaml
-python scripts/train_dl.py --config configs/transformer.yaml
-python scripts/train_dl.py --config configs/hybrid_gated.yaml
-python scripts/train_dl.py --config configs/hybrid_two_stage.yaml
-python scripts/train_dl.py --config configs/lstm.yaml --set target.cap=null --name lstm_uncapped
-python scripts/run_ml_baselines.py
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/lstm.yaml
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/tcn.yaml
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/transformer.yaml
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/hybrid_gated.yaml
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/hybrid_two_stage.yaml
+python scripts/train_dl.py --metrics-dir build/reproduce --config configs/lstm.yaml --set target.cap=null --name lstm_uncapped
+python scripts/run_ml_baselines.py --out-dir build/reproduce
 jupyter lab notebooks/phase2/
 ```
 
 For uncapped runs of the other models, use the same `--set target.cap=null` and
-`--name <model>_uncapped` options. Use a separate `--metrics-dir` when experimenting
-to preserve the committed tuning results required by the freeze check.
+`--name <model>_uncapped` options. Keep the separate output directory when experimenting.
 
 Phase 2 notebooks run in numeric order: [05 target cap](notebooks/phase2/05_rul_cap.ipynb),
 [06 LSTM](notebooks/phase2/06_lstm.ipynb), [07 TCN](notebooks/phase2/07_tcn.ipynb),
