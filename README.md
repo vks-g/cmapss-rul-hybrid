@@ -14,9 +14,9 @@ Engineered-feature machine learning (Phase 1) compared with sequence deep learni
 [![PyTorch](https://img.shields.io/badge/PyTorch-%E2%89%A52.6-ee4c2c?logo=pytorch&logoColor=white)](requirements.txt)
 [![Tests: pytest](https://img.shields.io/badge/tests-pytest-0a9edc?logo=pytest&logoColor=white)](tests/)
 [![Dataset: NASA C-MAPSS](https://img.shields.io/badge/dataset-NASA_C--MAPSS-0b3d91)](data/README.md)
-[![Report: IEEE PDF](https://img.shields.io/badge/report-IEEE_PDF-eda100?logo=latex&logoColor=white)](reports/phase1/main.pdf)
+[![Report: IEEE PDF](https://img.shields.io/badge/report-IEEE_PDF-eda100?logo=latex&logoColor=white)](reports/phase2/main.pdf)
 
-[Phase 1 report](reports/phase1/main.pdf) · [Phase 2 report sources](reports/phase2/README.md) · [Final comparison](notebooks/phase2/15_final_comparison.ipynb) · [Slides](presentations/phase1.pdf) · [Architecture diagrams](docs/architecture/README.md) · [Contributing](CONTRIBUTING.md)
+[Phase 2 report](reports/phase2/main.pdf) · [Phase 2 slides](presentations/phase2.pdf) · [Phase 1 report](reports/phase1/main.pdf) · [Phase 1 slides](presentations/phase1.pdf) · [Final comparison](notebooks/phase2/15_final_comparison.ipynb) · [Architecture diagrams](docs/architecture/README.md) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -121,7 +121,7 @@ Values are rounded from the full-precision saved metrics. Summary: [`fd001_final
   <img src="results/figures/fd001_final_comparison.png" width="720" alt="Final FD001 comparison of cap-125 and uncapped training across sequence, hybrid and ML models">
 </p>
 
-The [multi-regime study](notebooks/phase2/12_multi_regime.ipynb) extends the LSTM and Hybrid A to FD002 and FD004. The [Phase 2 report](reports/phase2/README.md) also covers regularization, ablations and interpretability.
+The [multi-regime study](notebooks/phase2/12_multi_regime.ipynb) extends the LSTM and Hybrid A to FD002 and FD004. The [Phase 2 report](reports/phase2/main.pdf) ([sources](reports/phase2/README.md)) also covers regularization, ablations and interpretability, and the [Phase 2 slides](presentations/phase2.pdf) summarize the results.
 
 ## Setup & reproduce
 
@@ -238,7 +238,7 @@ settings and the saved official results when reproducing the analysis.
 │   ├── phase1/           01 EDA → 02 features → 03 ML models → 04 official results
 │   └── phase2/           05 cap → models / hybrids → studies → 15 final comparison
 ├── presentations/        phase slide decks
-├── reports/              phase1/ report and PDF; phase2/ sections, tables and refs
+├── reports/              phase1/ and phase2/ IEEE reports: sections, tables, refs and PDF
 ├── results/
 │   ├── figures/          EDA and test-set figures
 │   └── metrics/          test metrics (JSON) and per-engine predictions (CSV)
